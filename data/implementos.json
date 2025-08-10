@@ -10,11 +10,5 @@
     "nome": "Bomba Centrífuga 3\"",
     "tipo": "Bomba",
     "descricao": "Bomba centrífuga 3 polegadas"
-  },
-  {
-    "codigo": "MOTOR001",
-    "nome": "Motor Diesel 15HP",
-    "tipo": "Motor",
-    "descricao": "Motor diesel 15 cavalos"
   }
 ]
