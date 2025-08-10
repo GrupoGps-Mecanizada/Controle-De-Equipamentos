@@ -1,20 +1,20 @@
 [
   {
     "id": "EQ001",
-    "placa": "EAM-3251",
-    "tipo": "Caminhão Auto Vácuo",
-    "status": "Operacional",
-    "regime": "ADM",
-    "implementos": {},
-    "dataCadastro": "2025-08-10T21:10:56.311Z"
-  },
-  {
-    "id": "EQ1754860486334",
-    "placa": "EAM-3253",
+    "placa": "ABC-1234",
     "tipo": "Caminhão Alta Pressão",
     "status": "Operacional",
     "regime": "24HS",
-    "implementos": {},
-    "dataCadastro": "2025-08-10T21:14:46.334Z"
+    "implementos": {
+      "MANG001": {
+        "quantidade": 5,
+        "necessario": 6
+      },
+      "BOMB001": {
+        "quantidade": 1,
+        "necessario": 1
+      }
+    },
+    "dataCadastro": "2025-08-10T21:16:27.338Z"
   }
 ]
