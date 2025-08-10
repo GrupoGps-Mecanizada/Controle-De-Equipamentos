@@ -2,13 +2,19 @@
   {
     "codigo": "MANG001",
     "nome": "Lance de Mangueira",
-    "tipo": "Implemento",
-    "descricao": ""
+    "tipo": "Mangueira",
+    "descricao": "Lance de mangueira de alta pressão"
   },
   {
-    "codigo": "IMP-AV-01",
-    "nome": "Mangote 3",
-    "tipo": "Implemento",
-    "descricao": ""
+    "codigo": "BOMB001",
+    "nome": "Bomba Centrífuga 3\"",
+    "tipo": "Bomba",
+    "descricao": "Bomba centrífuga 3 polegadas"
+  },
+  {
+    "codigo": "MOTOR001",
+    "nome": "Motor Diesel 15HP",
+    "tipo": "Motor",
+    "descricao": "Motor diesel 15 cavalos"
   }
 ]
