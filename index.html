@@ -1251,6 +1251,9 @@
                                 <h4 class="card-title">Sincronização GitHub</h4>
                             </div>
                             <div class="card-content">
+                                <p style="color: var(--gray-600); font-size: 0.875rem; margin-bottom: 1rem;">
+                                    <strong>Segurança:</strong> O token é salvo apenas no seu navegador e não é sincronizado com o repositório.
+                                </p>
                                 <div class="form-grid">
                                     <div class="form-group">
                                         <label class="form-label">Token de Acesso</label>
@@ -1268,7 +1271,7 @@
                                         Testar Conexão
                                     </button>
                                     <button class="btn btn-success" onclick="salvarConfigGitHub()">
-                                        Salvar Configurações
+                                        Salvar Token
                                     </button>
                                 </div>
                             </div>
@@ -1691,6 +1694,13 @@
                 usuarios = JSON.parse(localStorage.getItem('grupoGPS_usuarios') || '{}');
                 configuracoes = JSON.parse(localStorage.getItem('grupoGPS_configuracoes') || '{}');
                 
+                // Carregar token separadamente (só do navegador, não do GitHub)
+                const savedToken = localStorage.getItem('grupoGPS_githubToken');
+                if (savedToken) {
+                    configuracoes.githubToken = savedToken;
+                    GITHUB_CONFIG.token = savedToken;
+                }
+                
                 console.log('Dados locais carregados:', {
                     equipamentos: equipamentos.length,
                     tiposImplementos: tiposImplementos.length,
@@ -1707,7 +1717,16 @@
                 localStorage.setItem('grupoGPS_implementos', JSON.stringify(tiposImplementos));
                 localStorage.setItem('grupoGPS_historico', JSON.stringify(historico));
                 localStorage.setItem('grupoGPS_usuarios', JSON.stringify(usuarios));
-                localStorage.setItem('grupoGPS_configuracoes', JSON.stringify(configuracoes));
+                
+                // Salvar configurações sem o token (o token fica só no navegador)
+                const configSemToken = { ...configuracoes };
+                delete configSemToken.githubToken;
+                localStorage.setItem('grupoGPS_configuracoes', JSON.stringify(configSemToken));
+                
+                // Salvar token separadamente no navegador
+                if (configuracoes.githubToken) {
+                    localStorage.setItem('grupoGPS_githubToken', configuracoes.githubToken);
+                }
                 
                 console.log('Dados salvos localmente');
             } catch (error) {
@@ -1781,9 +1800,10 @@
                 return;
             }
 
-            const token = GITHUB_CONFIG.token || configuracoes.githubToken;
+            const token = GITHUB_CONFIG.token || localStorage.getItem('grupoGPS_githubToken');
             if (!token) {
-                console.log('Token do GitHub não configurado');
+                console.log('Token do GitHub não configurado - dados salvos apenas localmente');
+                updateSyncStatus('success', 'Local');
                 return;
             }
 
@@ -1793,13 +1813,16 @@
                 // Verificar se repositório existe
                 await checkAndCreateRepo(token);
                 
-                // Sincronizar cada arquivo
+                // Sincronizar cada arquivo (sem incluir o token nas configurações)
+                const configSemToken = { ...configuracoes };
+                delete configSemToken.githubToken;
+                
                 const files = [
                     { path: GITHUB_CONFIG.paths.equipamentos, data: equipamentos },
                     { path: GITHUB_CONFIG.paths.implementos, data: tiposImplementos },
                     { path: GITHUB_CONFIG.paths.historico, data: historico },
                     { path: GITHUB_CONFIG.paths.usuarios, data: usuarios },
-                    { path: GITHUB_CONFIG.paths.configuracoes, data: configuracoes }
+                    { path: GITHUB_CONFIG.paths.configuracoes, data: configSemToken }
                 ];
                 
                 for (const file of files) {
@@ -3054,9 +3077,12 @@
 
         // Configurações
         function carregarConfiguracoes() {
-            if (configuracoes.githubToken) {
-                document.getElementById('githubToken').value = configuracoes.githubToken;
-                GITHUB_CONFIG.token = configuracoes.githubToken;
+            // Carregar token do localStorage separado
+            const savedToken = localStorage.getItem('grupoGPS_githubToken');
+            if (savedToken) {
+                document.getElementById('githubToken').value = savedToken;
+                GITHUB_CONFIG.token = savedToken;
+                configuracoes.githubToken = savedToken;
             }
             
             if (configuracoes.nomeEmpresa) {
@@ -3106,8 +3132,16 @@
             if (token) {
                 GITHUB_CONFIG.token = token;
                 configuracoes.githubToken = token;
-                saveLocalData();
-                showNotification('Configurações do GitHub salvas!', 'success');
+                
+                // Salvar token apenas no navegador local
+                localStorage.setItem('grupoGPS_githubToken', token);
+                
+                // Salvar outras configurações (sem o token)
+                const configSemToken = { ...configuracoes };
+                delete configSemToken.githubToken;
+                localStorage.setItem('grupoGPS_configuracoes', JSON.stringify(configSemToken));
+                
+                showNotification('Token do GitHub salvo localmente!', 'success');
                 
                 // Testar sincronização
                 syncData();
@@ -3130,6 +3164,7 @@
         function resetarSistema() {
             if (confirm('ATENÇÃO: Isso irá apagar todos os dados do sistema. Tem certeza?')) {
                 if (confirm('Esta ação não pode ser desfeita. Confirma o reset completo?')) {
+                    // Limpar todos os dados locais, incluindo o token
                     localStorage.clear();
                     location.reload();
                 }
