@@ -1,1 +1,11 @@
-[]
+[
+  {
+    "id": "EQ1754858002296",
+    "placa": "EAM-3251",
+    "tipo": "Caminhão Auto Vácuo",
+    "status": "Operacional",
+    "regime": "ADM",
+    "implementos": {},
+    "dataCadastro": "2025-08-10T20:33:22.296Z"
+  }
+]
