@@ -2,10 +2,10 @@
   {
     "id": "EQ001",
     "placa": "EAM-3251",
-    "tipo": "Caminhão Alta Pressão",
+    "tipo": "Caminhão Auto Vácuo",
     "status": "Operacional",
-    "regime": "24HS",
+    "regime": "ADM",
     "implementos": {},
-    "dataCadastro": "2025-08-10T21:10:46.530Z"
+    "dataCadastro": "2025-08-10T21:10:56.311Z"
   }
 ]
