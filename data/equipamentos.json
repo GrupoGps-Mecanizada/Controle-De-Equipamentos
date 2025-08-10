@@ -5,7 +5,12 @@
     "tipo": "Caminhão Auto Vácuo",
     "status": "Operacional",
     "regime": "ADM",
-    "implementos": {},
-    "dataCadastro": "2025-08-10T20:33:22.296Z"
+    "implementos": {
+      "IMP-AV-01": {
+        "quantidade": 0,
+        "necessario": 1
+      }
+    },
+    "dataCadastro": "2025-08-10T20:35:54.310Z"
   }
 ]
