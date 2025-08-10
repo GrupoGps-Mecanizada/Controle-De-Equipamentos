@@ -1,0 +1,20 @@
+[
+  {
+    "id": "EQ001",
+    "placa": "ABC-1234",
+    "tipo": "Caminhão Alta Pressão",
+    "status": "Operacional",
+    "regime": "24HS",
+    "implementos": {
+      "MANG001": {
+        "quantidade": 6,
+        "necessario": 6
+      },
+      "BOMB001": {
+        "quantidade": 1,
+        "necessario": 1
+      }
+    },
+    "dataCadastro": "2025-08-10T20:17:45.076Z"
+  }
+]
