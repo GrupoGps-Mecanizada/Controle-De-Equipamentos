@@ -1,0 +1,3229 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Controle de Equipamentos - GrupoGPS</title>
+
+    <!-- Bibliotecas -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #1e40af;
+            --secondary-color: #64748b;
+            --success-color: #059669;
+            --warning-color: #d97706;
+            --danger-color: #dc2626;
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1;
+            --gray-400: #94a3b8;
+            --gray-500: #64748b;
+            --gray-600: #475569;
+            --gray-700: #334155;
+            --gray-800: #1e293b;
+            --gray-900: #0f172a;
+            --white: #ffffff;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--gray-50);
+            color: var(--gray-900);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .app-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Login Screen (Opcional) */
+        .login-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, var(--gray-900) 0%, var(--gray-700) 100%);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+        }
+
+        .login-screen.show {
+            display: flex;
+        }
+
+        .login-container {
+            background: var(--white);
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .login-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            color: var(--gray-900);
+        }
+
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: var(--gray-700);
+            font-size: 0.875rem;
+        }
+
+        .form-input {
+            padding: 0.75rem;
+            border: 1px solid var(--gray-300);
+            border-radius: 6px;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+        }
+
+        .btn {
+            background: var(--primary-color);
+            color: var(--white);
+            border: none;
+            padding: 0.75rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+            font-size: 0.875rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn:hover {
+            background: #1d4ed8;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: var(--gray-600);
+        }
+
+        .btn-secondary:hover {
+            background: var(--gray-700);
+        }
+
+        .btn-success {
+            background: var(--success-color);
+        }
+
+        .btn-success:hover {
+            background: #047857;
+        }
+
+        .btn-warning {
+            background: var(--warning-color);
+        }
+
+        .btn-warning:hover {
+            background: #b45309;
+        }
+
+        .btn-danger {
+            background: var(--danger-color);
+        }
+
+        .btn-danger:hover {
+            background: #b91c1c;
+        }
+
+        .btn-sm {
+            padding: 0.5rem 0.75rem;
+            font-size: 0.8rem;
+        }
+
+        /* Header */
+        .header {
+            background: var(--white);
+            border-bottom: 1px solid var(--gray-200);
+            padding: 1rem 1.5rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-brand {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            background: var(--gray-100);
+            border-radius: 6px;
+            font-size: 0.875rem;
+            color: var(--gray-700);
+        }
+
+        .sync-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+            color: var(--gray-600);
+        }
+
+        .sync-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success-color);
+        }
+
+        .sync-dot.loading {
+            background: var(--warning-color);
+            animation: pulse 2s infinite;
+        }
+
+        .sync-dot.error {
+            background: var(--danger-color);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Navigation */
+        .nav-tabs {
+            background: var(--white);
+            border-bottom: 1px solid var(--gray-200);
+            overflow-x: auto;
+        }
+
+        .nav-tabs-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+        }
+
+        .nav-tab {
+            padding: 1rem 1.5rem;
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--gray-600);
+            transition: all 0.2s;
+            white-space: nowrap;
+            font-size: 0.875rem;
+        }
+
+        .nav-tab:hover {
+            color: var(--primary-color);
+            background: var(--gray-50);
+        }
+
+        .nav-tab.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+            background: var(--gray-50);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Filtros da Visão Geral */
+        .filters-section {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            align-items: end;
+        }
+
+        /* Equipment Cards */
+        .equipment-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .equipment-card {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .equipment-card:hover {
+            border-color: var(--primary-color);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .equipment-card.warning {
+            border-left: 4px solid var(--warning-color);
+            background: linear-gradient(90deg, rgba(217, 119, 6, 0.05) 0%, var(--white) 10%);
+        }
+
+        .equipment-card.danger {
+            border-left: 4px solid var(--danger-color);
+            background: linear-gradient(90deg, rgba(220, 38, 38, 0.05) 0%, var(--white) 10%);
+        }
+
+        .equipment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .equipment-info h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 0.25rem;
+        }
+
+        .equipment-details {
+            font-size: 0.875rem;
+            color: var(--gray-600);
+            margin-bottom: 0.5rem;
+        }
+
+        .equipment-status {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .status-operacional {
+            background: rgba(5, 150, 105, 0.1);
+            color: var(--success-color);
+        }
+
+        .status-manutencao {
+            background: rgba(217, 119, 6, 0.1);
+            color: var(--warning-color);
+        }
+
+        .status-inativo {
+            background: rgba(220, 38, 38, 0.1);
+            color: var(--danger-color);
+        }
+
+        .regime-badge {
+            background: rgba(30, 64, 175, 0.1);
+            color: var(--primary-color);
+        }
+
+        .equipment-implements {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--gray-200);
+        }
+
+        .implements-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .implements-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--gray-700);
+        }
+
+        .implements-count {
+            font-size: 0.75rem;
+            color: var(--gray-500);
+            background: var(--gray-100);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+        }
+
+        .implement-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem;
+            background: var(--gray-50);
+            border-radius: 4px;
+            margin-bottom: 0.5rem;
+            font-size: 0.8rem;
+        }
+
+        .implement-item.warning {
+            background: rgba(217, 119, 6, 0.1);
+            border: 1px solid rgba(217, 119, 6, 0.3);
+        }
+
+        .implement-item.danger {
+            background: rgba(220, 38, 38, 0.1);
+            border: 1px solid rgba(220, 38, 38, 0.3);
+        }
+
+        .implement-name {
+            font-weight: 500;
+            color: var(--gray-700);
+            flex: 1;
+        }
+
+        .implement-quantity {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-left: 1rem;
+        }
+
+        .quantity-display {
+            padding: 0.25rem 0.5rem;
+            background: var(--gray-200);
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .quantity-display.warning {
+            background: rgba(217, 119, 6, 0.2);
+            color: var(--warning-color);
+        }
+
+        .quantity-display.danger {
+            background: rgba(220, 38, 38, 0.2);
+            color: var(--danger-color);
+        }
+
+        .quantity-input {
+            width: 60px;
+            padding: 0.25rem;
+            border: 1px solid var(--gray-300);
+            border-radius: 4px;
+            text-align: center;
+            font-size: 0.8rem;
+        }
+
+        .implement-actions {
+            display: flex;
+            gap: 0.25rem;
+            margin-left: 0.5rem;
+        }
+
+        .implement-btn {
+            padding: 0.25rem 0.5rem;
+            border: none;
+            background: var(--gray-200);
+            color: var(--gray-600);
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 0.7rem;
+            transition: all 0.2s;
+        }
+
+        .implement-btn:hover {
+            background: var(--primary-color);
+            color: var(--white);
+        }
+
+        .implement-btn.danger:hover {
+            background: var(--danger-color);
+        }
+
+        /* Cards */
+        .card {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
+        }
+
+        .card-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .card-title {
+            font-weight: 600;
+            color: var(--gray-900);
+            font-size: 1rem;
+        }
+
+        .card-content {
+            padding: 1.5rem;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .stat-card:hover {
+            border-color: var(--primary-color);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            color: var(--gray-600);
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        /* Forms */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 1.5rem;
+        }
+
+        /* Tables */
+        .table-container {
+            overflow-x: auto;
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--white);
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--gray-200);
+            font-size: 0.875rem;
+        }
+
+        .data-table th {
+            background: var(--gray-50);
+            font-weight: 600;
+            color: var(--gray-900);
+            position: sticky;
+            top: 0;
+        }
+
+        .data-table tr:hover {
+            background: var(--gray-50);
+        }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 1rem;
+        }
+
+        .modal.show {
+            display: flex !important;
+        }
+
+        .modal-content {
+            background: var(--white);
+            border-radius: 8px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .modal-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray-400);
+            padding: 0.25rem;
+            border-radius: 4px;
+            transition: color 0.2s;
+        }
+
+        .modal-close:hover {
+            color: var(--gray-600);
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .modal-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--gray-200);
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
+        }
+
+        /* Notifications */
+        .notification {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            padding: 1rem;
+            border-radius: 6px;
+            color: var(--white);
+            font-weight: 500;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            z-index: 10000;
+            max-width: 400px;
+            animation: slideInRight 0.3s ease-out;
+        }
+
+        .notification.success { background: var(--success-color); }
+        .notification.error { background: var(--danger-color); }
+        .notification.warning { background: var(--warning-color); }
+        .notification.info { background: var(--primary-color); }
+
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* Loading */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .loading-overlay.show {
+            display: flex;
+        }
+
+        .loading-spinner {
+            width: 2rem;
+            height: 2rem;
+            border: 2px solid var(--gray-300);
+            border-top: 2px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: var(--white);
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .header-controls {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .main-content {
+                padding: 1rem;
+            }
+
+            .equipment-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-tab {
+                padding: 0.75rem 1rem;
+                font-size: 0.8rem;
+            }
+
+            .form-grid, .filters-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .data-table th,
+            .data-table td {
+                padding: 0.5rem;
+                font-size: 0.8rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                margin: 0.5rem;
+            }
+
+            .card-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .header-brand {
+                font-size: 1rem;
+            }
+        }
+
+        .hidden { display: none !important; }
+        .show { display: block !important; }
+    </style>
+</head>
+<body>
+    <!-- Login Screen (Opcional) -->
+    <div class="login-screen" id="loginScreen">
+        <div class="login-container">
+            <h1 class="login-title">Sistema de Controle de Equipamentos</h1>
+            
+            <form class="login-form" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label class="form-label">Usuário</label>
+                    <input type="text" id="loginUser" class="form-input" placeholder="Digite seu usuário" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Senha</label>
+                    <input type="password" id="loginPassword" class="form-input" placeholder="Digite sua senha" required>
+                </div>
+                
+                <button type="submit" class="btn">
+                    Entrar no Sistema
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="app-container" id="appContainer">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="header-brand">
+                    Sistema de Controle de Equipamentos - GrupoGPS
+                </div>
+                
+                <div class="header-controls">
+                    <div class="user-info" id="userInfo" style="display: none;">
+                        <span id="currentUser">Sistema</span>
+                    </div>
+                    
+                    <div class="sync-status">
+                        <div class="sync-dot" id="syncDot"></div>
+                        <span id="syncStatus">Sincronizado</span>
+                    </div>
+                    
+                    <button class="btn btn-sm" onclick="syncData()">
+                        Sincronizar
+                    </button>
+                    
+                    <button class="btn btn-danger btn-sm" id="logoutBtn" onclick="logout()" style="display: none;">
+                        Sair
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <nav class="nav-tabs">
+            <div class="nav-tabs-container">
+                <div class="nav-tab active" onclick="switchTab('visao-geral')">
+                    Visão Geral
+                </div>
+                <div class="nav-tab" onclick="switchTab('equipamentos')">
+                    Equipamentos
+                </div>
+                <div class="nav-tab" onclick="switchTab('implementos')">
+                    Implementos
+                </div>
+                <div class="nav-tab" onclick="switchTab('movimentacoes')">
+                    Movimentações
+                </div>
+                <div class="nav-tab" onclick="switchTab('historico')">
+                    Histórico
+                </div>
+                <div class="nav-tab" onclick="switchTab('relatorios')">
+                    Relatórios
+                </div>
+                <div class="nav-tab" onclick="switchTab('configuracoes')">
+                    Configurações
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Visão Geral Tab -->
+            <div id="visao-geral-tab" class="tab-content active">
+                <!-- Filtros -->
+                <div class="filters-section">
+                    <div class="filters-grid">
+                        <div class="form-group">
+                            <label class="form-label">Filtrar por Placa/ID</label>
+                            <input type="text" id="filtroPlaca" class="form-input" 
+                                   placeholder="Digite a placa..." onkeyup="filtrarEquipamentosVisaoGeral()">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Filtrar por Tipo</label>
+                            <select id="filtroTipoVisaoGeral" class="form-input" onchange="filtrarEquipamentosVisaoGeral()">
+                                <option value="">Todos os tipos</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Status de Implementos</label>
+                            <select id="filtroStatusImplementos" class="form-input" onchange="filtrarEquipamentosVisaoGeral()">
+                                <option value="">Todos</option>
+                                <option value="ok">Completos</option>
+                                <option value="warning">Com Defasagem</option>
+                                <option value="danger">Com Falta Crítica</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>&nbsp;</label>
+                            <button class="btn btn-secondary" onclick="limparFiltros()">
+                                Limpar Filtros
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Estatísticas -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalEquipamentos">0</div>
+                        <div class="stat-label">Total de Equipamentos</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="equipamentosOperacionais">0</div>
+                        <div class="stat-label">Operacionais</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="equipamentosComDefasagem">0</div>
+                        <div class="stat-label">Com Defasagem</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalTiposImplementos">0</div>
+                        <div class="stat-label">Tipos de Implementos</div>
+                    </div>
+                </div>
+
+                <!-- Grid de Equipamentos -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Equipamentos da Frota</h3>
+                        <div style="display: flex; gap: 0.75rem;">
+                            <button class="btn btn-success" onclick="abrirModalEquipamento()">
+                                Novo Equipamento
+                            </button>
+                            <button class="btn" onclick="abrirModalImplemento()">
+                                Novo Tipo de Implemento
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div class="equipment-grid" id="equipmentGrid">
+                            <!-- Equipment cards will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Equipamentos Tab -->
+            <div id="equipamentos-tab" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Gestão de Equipamentos</h3>
+                        <div style="display: flex; gap: 0.75rem;">
+                            <button class="btn btn-success" onclick="abrirModalEquipamento()">
+                                Novo Equipamento
+                            </button>
+                            <button class="btn btn-secondary" onclick="exportarEquipamentos()">
+                                Exportar Excel
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div class="form-grid" style="margin-bottom: 1.5rem;">
+                            <div class="form-group">
+                                <input type="search" id="buscarEquipamento" class="form-input" 
+                                       placeholder="Buscar equipamento..." onkeyup="filtrarEquipamentos()">
+                            </div>
+                            <div class="form-group">
+                                <select id="filtroTipo" class="form-input" onchange="filtrarEquipamentos()">
+                                    <option value="">Todos os tipos</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <select id="filtroStatus" class="form-input" onchange="filtrarEquipamentos()">
+                                    <option value="">Todos os status</option>
+                                    <option value="Operacional">Operacional</option>
+                                    <option value="Manutenção">Manutenção</option>
+                                    <option value="Inativo">Inativo</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="table-container">
+                            <table class="data-table" id="tabelaEquipamentos">
+                                <thead>
+                                    <tr>
+                                        <th>Placa/ID</th>
+                                        <th>Tipo</th>
+                                        <th>Status</th>
+                                        <th>Regime</th>
+                                        <th>Tipos de Implementos</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="equipamentosTableBody">
+                                    <tr>
+                                        <td colspan="6" style="text-align: center; padding: 2rem; color: var(--gray-500);">
+                                            Carregando equipamentos...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Implementos Tab -->
+            <div id="implementos-tab" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Tipos de Implementos</h3>
+                        <div style="display: flex; gap: 0.75rem;">
+                            <button class="btn btn-success" onclick="abrirModalImplemento()">
+                                Novo Tipo de Implemento
+                            </button>
+                            <button class="btn btn-secondary" onclick="exportarImplementos()">
+                                Exportar Excel
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div class="form-grid" style="margin-bottom: 1.5rem;">
+                            <div class="form-group">
+                                <input type="search" id="buscarImplemento" class="form-input" 
+                                       placeholder="Buscar implemento..." onkeyup="filtrarImplementos()">
+                            </div>
+                            <div class="form-group">
+                                <select id="filtroTipoImplemento" class="form-input" onchange="filtrarImplementos()">
+                                    <option value="">Todos os tipos</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="table-container">
+                            <table class="data-table" id="tabelaImplementos">
+                                <thead>
+                                    <tr>
+                                        <th>Código</th>
+                                        <th>Nome</th>
+                                        <th>Tipo</th>
+                                        <th>Descrição</th>
+                                        <th>Total em Uso</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="implementosTableBody">
+                                    <tr>
+                                        <td colspan="6" style="text-align: center; padding: 2rem; color: var(--gray-500);">
+                                            Carregando implementos...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Movimentações Tab -->
+            <div id="movimentacoes-tab" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Movimentação de Implementos</h3>
+                    </div>
+                    <div class="card-content">
+                        <p style="color: var(--gray-600); margin-bottom: 1rem;">
+                            As movimentações são realizadas diretamente na <strong>Visão Geral</strong> através dos controles de quantidade nos equipamentos.
+                        </p>
+                        <div style="text-align: center; padding: 2rem;">
+                            <button class="btn btn-primary" onclick="switchTab('visao-geral')">
+                                Ir para Visão Geral
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Histórico Tab -->
+            <div id="historico-tab" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Histórico de Movimentações</h3>
+                        <button class="btn btn-secondary" onclick="exportarHistorico()">
+                            Exportar Excel
+                        </button>
+                    </div>
+                    <div class="card-content">
+                        <div class="form-grid" style="margin-bottom: 1.5rem;">
+                            <div class="form-group">
+                                <label class="form-label">Data Inicial</label>
+                                <input type="date" id="dataInicialHistorico" class="form-input">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Data Final</label>
+                                <input type="date" id="dataFinalHistorico" class="form-input">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Implemento</label>
+                                <input type="text" id="implementoHistorico" class="form-input" 
+                                       placeholder="Nome do implemento">
+                            </div>
+                            <div class="form-group">
+                                <label>&nbsp;</label>
+                                <button class="btn" onclick="filtrarHistorico()">
+                                    Filtrar
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="table-container">
+                            <table class="data-table" id="tabelaHistorico">
+                                <thead>
+                                    <tr>
+                                        <th>Data/Hora</th>
+                                        <th>Equipamento</th>
+                                        <th>Implemento</th>
+                                        <th>Operação</th>
+                                        <th>Quantidade</th>
+                                        <th>Responsável</th>
+                                        <th>Observações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="historicoTableBody">
+                                    <tr>
+                                        <td colspan="7" style="text-align: center; padding: 2rem; color: var(--gray-500);">
+                                            Carregando histórico...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Relatórios Tab -->
+            <div id="relatorios-tab" class="tab-content">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="movimentacoesHoje">0</div>
+                        <div class="stat-label">Movimentações Hoje</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="equipamentosCompletos">0</div>
+                        <div class="stat-label">Equipamentos Completos</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalImplementosUso">0</div>
+                        <div class="stat-label">Total Implementos em Uso</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="utilizacaoFrota">0%</div>
+                        <div class="stat-label">Utilização da Frota</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Relatórios do Sistema</h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="form-grid" style="margin-bottom: 2rem;">
+                            <div class="form-group">
+                                <label class="form-label">Período Inicial</label>
+                                <input type="date" id="periodoInicial" class="form-input">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Período Final</label>
+                                <input type="date" id="periodoFinal" class="form-input">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Tipo de Relatório</label>
+                                <select id="tipoRelatorio" class="form-input">
+                                    <option value="geral">Relatório Geral</option>
+                                    <option value="por_equipamento">Por Equipamento</option>
+                                    <option value="por_implemento">Por Tipo de Implemento</option>
+                                    <option value="defasagens">Análise de Defasagens</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>&nbsp;</label>
+                                <button class="btn btn-success" onclick="gerarRelatorio()">
+                                    Gerar Relatório
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="relatorioResultado" class="card hidden">
+                            <div class="card-header">
+                                <h4 class="card-title">Resultado do Relatório</h4>
+                            </div>
+                            <div class="card-content">
+                                <div id="relatorioConteudo"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Configurações Tab -->
+            <div id="configuracoes-tab" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Configurações do Sistema</h3>
+                    </div>
+                    <div class="card-content">
+                        <!-- Configurações GitHub -->
+                        <div class="card" style="margin-bottom: 1.5rem;">
+                            <div class="card-header">
+                                <h4 class="card-title">Sincronização GitHub</h4>
+                            </div>
+                            <div class="card-content">
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label class="form-label">Token de Acesso</label>
+                                        <input type="password" id="githubToken" class="form-input" 
+                                               placeholder="GitHub Personal Access Token">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Repositório</label>
+                                        <input type="text" id="githubRepo" class="form-input" 
+                                               value="GrupoGps-Mecanizada/Controle-De-Equipamentos" readonly>
+                                    </div>
+                                </div>
+                                <div class="form-actions">
+                                    <button class="btn" onclick="testarConexaoGitHub()">
+                                        Testar Conexão
+                                    </button>
+                                    <button class="btn btn-success" onclick="salvarConfigGitHub()">
+                                        Salvar Configurações
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Sistema de Login -->
+                        <div class="card" style="margin-bottom: 1.5rem;">
+                            <div class="card-header">
+                                <h4 class="card-title">Sistema de Login</h4>
+                            </div>
+                            <div class="card-content">
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label class="form-label">Ativar Sistema de Login</label>
+                                        <select id="ativarLogin" class="form-input" onchange="toggleLoginSystem()">
+                                            <option value="false">Desativado</option>
+                                            <option value="true">Ativado</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div id="loginConfig" class="hidden">
+                                    <h5 style="margin: 1.5rem 0 1rem 0;">Gestão de Usuários</h5>
+                                    <div style="margin-bottom: 1rem;">
+                                        <button class="btn btn-success" onclick="abrirModalNovoUsuario()">
+                                            Novo Usuário
+                                        </button>
+                                    </div>
+                                    
+                                    <div class="table-container">
+                                        <table class="data-table" id="tabelaUsuarios">
+                                            <thead>
+                                                <tr>
+                                                    <th>Usuário</th>
+                                                    <th>Nome</th>
+                                                    <th>Nível de Acesso</th>
+                                                    <th>Status</th>
+                                                    <th>Ações</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="usuariosTableBody">
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Configurações Gerais -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h4 class="card-title">Configurações Gerais</h4>
+                            </div>
+                            <div class="card-content">
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label class="form-label">Nome da Empresa</label>
+                                        <input type="text" id="nomeEmpresa" class="form-input" value="GrupoGPS">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Auto-save (segundos)</label>
+                                        <input type="number" id="autoSaveInterval" class="form-input" value="30" min="10">
+                                    </div>
+                                </div>
+                                <div class="form-actions">
+                                    <button class="btn btn-success" onclick="salvarConfigGerais()">
+                                        Salvar Configurações
+                                    </button>
+                                    <button class="btn btn-warning" onclick="resetarSistema()">
+                                        Resetar Sistema
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer style="background: var(--white); border-top: 1px solid var(--gray-200); padding: 1rem; text-align: center; color: var(--gray-600); font-size: 0.875rem;">
+            <p>Sistema de Controle de Equipamentos | © 2025 GrupoGPS - Todos os direitos reservados</p>
+        </footer>
+    </div>
+
+    <!-- Modals -->
+    <!-- Modal Equipamento -->
+    <div class="modal" id="modalEquipamento">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalEquipamentoTitle">Cadastrar Equipamento</h3>
+                <button class="modal-close" onclick="closeModal('modalEquipamento')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">Placa/ID *</label>
+                        <input type="text" id="placaEquipamento" class="form-input" placeholder="Ex: ABC-1234">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Tipo de Equipamento *</label>
+                        <select id="tipoEquipamento" class="form-input">
+                            <option value="">Selecione...</option>
+                            <option value="Caminhão Alta Pressão">Caminhão Alta Pressão</option>
+                            <option value="Caminhão Auto Vácuo">Caminhão Auto Vácuo</option>
+                            <option value="Caminhão Hiper Vácuo">Caminhão Hiper Vácuo</option>
+                            <option value="Caminhão Aspirador">Caminhão Aspirador</option>
+                            <option value="Caminhão Brook">Caminhão Brook</option>
+                            <option value="Caminhão Moto Bomba">Caminhão Moto Bomba</option>
+                            <option value="Veículo Leve">Veículo Leve</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Status *</label>
+                        <select id="statusEquipamento" class="form-input">
+                            <option value="Operacional">Operacional</option>
+                            <option value="Manutenção">Manutenção</option>
+                            <option value="Inativo">Inativo</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Regime de Trabalho *</label>
+                        <select id="regimeEquipamento" class="form-input">
+                            <option value="24HS">24HS</option>
+                            <option value="16HS">16HS</option>
+                            <option value="ADM">ADM</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 1.5rem;">
+                    <h4 style="margin-bottom: 1rem;">Implementos Necessários</h4>
+                    <div id="implementosNecessarios">
+                        <!-- Implementos necessários serão adicionados aqui -->
+                    </div>
+                    <button type="button" class="btn btn-sm" onclick="adicionarImplementoNecessario()">
+                        Adicionar Implemento Necessário
+                    </button>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('modalEquipamento')">Cancelar</button>
+                <button class="btn btn-success" onclick="salvarEquipamento()">Salvar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Implemento -->
+    <div class="modal" id="modalImplemento">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalImplementoTitle">Cadastrar Tipo de Implemento</h3>
+                <button class="modal-close" onclick="closeModal('modalImplemento')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">Código *</label>
+                        <input type="text" id="codigoImplemento" class="form-input" placeholder="Ex: MANG001">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Nome do Implemento *</label>
+                        <input type="text" id="nomeImplemento" class="form-input" placeholder="Ex: Lance de Mangueira">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Tipo *</label>
+                        <input type="text" id="tipoImplemento" class="form-input" 
+                               placeholder="Ex: Mangueira, Bomba, Motor, etc.">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Descrição</label>
+                        <textarea id="descricaoImplemento" class="form-input" rows="3"
+                                  placeholder="Descrição detalhada do implemento"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('modalImplemento')">Cancelar</button>
+                <button class="btn btn-success" onclick="salvarImplemento()">Salvar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Novo Usuário -->
+    <div class="modal" id="modalNovoUsuario">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Novo Usuário</h3>
+                <button class="modal-close" onclick="closeModal('modalNovoUsuario')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">Usuário *</label>
+                        <input type="text" id="novoUsuario" class="form-input" placeholder="Nome de usuário">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Nome Completo *</label>
+                        <input type="text" id="novoNomeCompleto" class="form-input" placeholder="Nome completo">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Senha *</label>
+                        <input type="password" id="novaSenha" class="form-input" placeholder="Senha">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Nível de Acesso *</label>
+                        <select id="novoNivelAcesso" class="form-input">
+                            <option value="user">Usuário</option>
+                            <option value="admin">Administrador</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('modalNovoUsuario')">Cancelar</button>
+                <button class="btn btn-success" onclick="salvarNovoUsuario()">Criar Usuário</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div style="text-align: center;">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">Processando...</div>
+        </div>
+    </div>
+
+    <script>
+        // Estado Global da Aplicação
+        let currentUser = null;
+        let userLevel = 'admin';
+        let loginEnabled = false;
+        let equipamentos = [];
+        let tiposImplementos = [];
+        let historico = [];
+        let usuarios = {};
+        let configuracoes = {};
+
+        // Configuração GitHub
+        const GITHUB_CONFIG = {
+            owner: 'GrupoGps-Mecanizada',
+            repo: 'Controle-De-Equipamentos',
+            branch: 'main',
+            token: null,
+            paths: {
+                equipamentos: 'data/equipamentos.json',
+                implementos: 'data/implementos.json',
+                historico: 'data/historico.json',
+                usuarios: 'data/usuarios.json',
+                configuracoes: 'data/configuracoes.json'
+            }
+        };
+
+        // Usuários padrão do sistema
+        const DEFAULT_USERS = {
+            'admin': { 
+                password: '123456', 
+                level: 'admin', 
+                name: 'Administrador',
+                active: true
+            },
+            'supervisor': { 
+                password: '123', 
+                level: 'user', 
+                name: 'Supervisor',
+                active: true
+            }
+        };
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', async () => {
+            console.log('Sistema de Controle de Equipamentos - GrupoGPS v2.0');
+            
+            // Carregar dados iniciais
+            await loadInitialData();
+            
+            // Verificar se login está ativado
+            if (configuracoes.loginEnabled) {
+                const savedUser = localStorage.getItem('grupoGPS_equipamentos_currentUser');
+                if (savedUser) {
+                    const userData = JSON.parse(savedUser);
+                    await loginUser(userData.username, userData.level, userData.name);
+                } else {
+                    showLoginScreen();
+                }
+            } else {
+                await initializeWithoutLogin();
+            }
+            
+            // Configurar event listeners
+            setupEventListeners();
+        });
+
+        // Event Listeners
+        function setupEventListeners() {
+            // Auto-save
+            setInterval(saveLocalData, 30000);
+            
+            // Fechar modais ao clicar fora
+            document.addEventListener('click', (e) => {
+                if (e.target.classList.contains('modal')) {
+                    e.target.classList.remove('show');
+                }
+            });
+
+            // Atalhos de teclado
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    document.querySelectorAll('.modal.show').forEach(modal => {
+                        modal.classList.remove('show');
+                    });
+                }
+            });
+        }
+
+        // Sistema de Login (Opcional)
+        function showLoginScreen() {
+            document.getElementById('loginScreen').classList.add('show');
+            document.getElementById('appContainer').style.display = 'none';
+        }
+
+        function hideLoginScreen() {
+            document.getElementById('loginScreen').classList.remove('show');
+            document.getElementById('appContainer').style.display = 'flex';
+        }
+
+        async function handleLogin(event) {
+            event.preventDefault();
+            
+            const username = document.getElementById('loginUser').value.toLowerCase();
+            const password = document.getElementById('loginPassword').value;
+            
+            // Verificar usuários padrão
+            if (DEFAULT_USERS[username] && DEFAULT_USERS[username].password === password) {
+                await loginUser(username, DEFAULT_USERS[username].level, DEFAULT_USERS[username].name);
+                return;
+            }
+            
+            // Verificar usuários personalizados
+            if (usuarios[username] && usuarios[username].password === password && usuarios[username].active) {
+                await loginUser(username, usuarios[username].level, usuarios[username].name);
+                return;
+            }
+            
+            showNotification('Usuário ou senha incorretos!', 'error');
+        }
+
+        async function loginUser(username, level, name) {
+            currentUser = username;
+            userLevel = level;
+            
+            // Salvar sessão
+            localStorage.setItem('grupoGPS_equipamentos_currentUser', JSON.stringify({
+                username, level, name
+            }));
+            
+            // Atualizar interface
+            hideLoginScreen();
+            document.getElementById('currentUser').textContent = name;
+            document.getElementById('userInfo').style.display = 'flex';
+            document.getElementById('logoutBtn').style.display = 'block';
+            
+            // Carregar dados da aplicação
+            await loadApplicationData();
+            
+            showNotification(`Bem-vindo, ${name}!`, 'success');
+        }
+
+        async function initializeWithoutLogin() {
+            currentUser = 'sistema';
+            userLevel = 'admin';
+            
+            hideLoginScreen();
+            
+            // Carregar dados da aplicação
+            await loadApplicationData();
+        }
+
+        function logout() {
+            localStorage.removeItem('grupoGPS_equipamentos_currentUser');
+            location.reload();
+        }
+
+        function toggleLoginSystem() {
+            const enabled = document.getElementById('ativarLogin').value === 'true';
+            loginEnabled = enabled;
+            configuracoes.loginEnabled = enabled;
+            
+            if (enabled) {
+                document.getElementById('loginConfig').classList.remove('hidden');
+                updateTabelaUsuarios();
+            } else {
+                document.getElementById('loginConfig').classList.add('hidden');
+            }
+            
+            saveLocalData();
+            showNotification(`Sistema de login ${enabled ? 'ativado' : 'desativado'}!`, 'info');
+        }
+
+        // Carregamento de Dados
+        async function loadInitialData() {
+            try {
+                loadLocalData();
+                
+                if (navigator.onLine) {
+                    await syncData();
+                }
+            } catch (error) {
+                console.error('Erro ao carregar dados:', error);
+                showNotification('Erro ao carregar dados. Usando dados locais.', 'warning');
+            }
+        }
+
+        function loadLocalData() {
+            try {
+                equipamentos = JSON.parse(localStorage.getItem('grupoGPS_equipamentos') || '[]');
+                tiposImplementos = JSON.parse(localStorage.getItem('grupoGPS_implementos') || '[]');
+                historico = JSON.parse(localStorage.getItem('grupoGPS_historico') || '[]');
+                usuarios = JSON.parse(localStorage.getItem('grupoGPS_usuarios') || '{}');
+                configuracoes = JSON.parse(localStorage.getItem('grupoGPS_configuracoes') || '{}');
+                
+                console.log('Dados locais carregados:', {
+                    equipamentos: equipamentos.length,
+                    tiposImplementos: tiposImplementos.length,
+                    historico: historico.length
+                });
+            } catch (error) {
+                console.error('Erro ao carregar dados locais:', error);
+            }
+        }
+
+        function saveLocalData() {
+            try {
+                localStorage.setItem('grupoGPS_equipamentos', JSON.stringify(equipamentos));
+                localStorage.setItem('grupoGPS_implementos', JSON.stringify(tiposImplementos));
+                localStorage.setItem('grupoGPS_historico', JSON.stringify(historico));
+                localStorage.setItem('grupoGPS_usuarios', JSON.stringify(usuarios));
+                localStorage.setItem('grupoGPS_configuracoes', JSON.stringify(configuracoes));
+                
+                console.log('Dados salvos localmente');
+            } catch (error) {
+                console.error('Erro ao salvar dados locais:', error);
+                showNotification('Erro ao salvar dados localmente', 'error');
+            }
+        }
+
+        async function loadApplicationData() {
+            // Carregar dados padrão se necessário
+            if (equipamentos.length === 0) {
+                loadDefaultData();
+            }
+            
+            // Inicializar interface
+            inicializarDataHora();
+            updateAllTables();
+            updateStatistics();
+            updateFilters();
+            updateEquipmentGrid();
+            carregarConfiguracoes();
+        }
+
+        function loadDefaultData() {
+            // Tipos de implementos padrão
+            tiposImplementos = [
+                {
+                    codigo: 'MANG001',
+                    nome: 'Lance de Mangueira',
+                    tipo: 'Mangueira',
+                    descricao: 'Lance de mangueira de alta pressão'
+                },
+                {
+                    codigo: 'BOMB001',
+                    nome: 'Bomba Centrífuga 3"',
+                    tipo: 'Bomba',
+                    descricao: 'Bomba centrífuga 3 polegadas'
+                },
+                {
+                    codigo: 'MOTOR001',
+                    nome: 'Motor Diesel 15HP',
+                    tipo: 'Motor',
+                    descricao: 'Motor diesel 15 cavalos'
+                }
+            ];
+            
+            // Equipamento exemplo
+            equipamentos = [
+                {
+                    id: 'EQ001',
+                    placa: 'ABC-1234',
+                    tipo: 'Caminhão Alta Pressão',
+                    status: 'Operacional',
+                    regime: '24HS',
+                    implementos: {
+                        'MANG001': { quantidade: 5, necessario: 6 },
+                        'BOMB001': { quantidade: 1, necessario: 1 }
+                    },
+                    dataCadastro: new Date().toISOString()
+                }
+            ];
+            
+            saveLocalData();
+            showNotification('Dados padrão carregados!', 'info');
+        }
+
+        // Sincronização com GitHub
+        async function syncData() {
+            if (!navigator.onLine) {
+                showNotification('Sem conexão com a internet', 'warning');
+                return;
+            }
+
+            const token = GITHUB_CONFIG.token || configuracoes.githubToken;
+            if (!token) {
+                console.log('Token do GitHub não configurado');
+                return;
+            }
+
+            updateSyncStatus('loading', 'Sincronizando...');
+            
+            try {
+                // Verificar se repositório existe
+                await checkAndCreateRepo(token);
+                
+                // Sincronizar cada arquivo
+                const files = [
+                    { path: GITHUB_CONFIG.paths.equipamentos, data: equipamentos },
+                    { path: GITHUB_CONFIG.paths.implementos, data: tiposImplementos },
+                    { path: GITHUB_CONFIG.paths.historico, data: historico },
+                    { path: GITHUB_CONFIG.paths.usuarios, data: usuarios },
+                    { path: GITHUB_CONFIG.paths.configuracoes, data: configuracoes }
+                ];
+                
+                for (const file of files) {
+                    await updateGitHubFile(token, file.path, file.data);
+                }
+                
+                updateSyncStatus('success', 'Sincronizado');
+                
+                localStorage.setItem('grupoGPS_lastSync', new Date().toISOString());
+                
+            } catch (error) {
+                console.error('Erro na sincronização:', error);
+                updateSyncStatus('error', 'Erro');
+                
+                if (error.message.includes('404')) {
+                    showNotification('Repositório não encontrado. Verifique as configurações.', 'warning');
+                } else {
+                    showNotification('Erro ao sincronizar: ' + error.message, 'error');
+                }
+            }
+        }
+
+        async function checkAndCreateRepo(token) {
+            try {
+                const response = await fetch(`https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}`, {
+                    headers: {
+                        'Authorization': `token ${token}`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    }
+                });
+                
+                if (response.status === 404) {
+                    throw new Error('Repositório não encontrado');
+                }
+                
+                if (!response.ok) {
+                    throw new Error(`Erro ao acessar repositório: ${response.statusText}`);
+                }
+            } catch (error) {
+                throw error;
+            }
+        }
+
+        async function updateGitHubFile(token, path, data) {
+            try {
+                // Primeiro, tentar obter o arquivo para pegar o SHA
+                let sha = null;
+                try {
+                    const getResponse = await fetch(`https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${path}`, {
+                        headers: {
+                            'Authorization': `token ${token}`,
+                            'Accept': 'application/vnd.github.v3+json'
+                        }
+                    });
+                    
+                    if (getResponse.ok) {
+                        const fileData = await getResponse.json();
+                        sha = fileData.sha;
+                    }
+                } catch (error) {
+                    // Arquivo não existe, será criado
+                }
+                
+                // Criar ou atualizar o arquivo
+                const content = btoa(JSON.stringify(data, null, 2));
+                const body = {
+                    message: `Atualizar ${path.split('/').pop()} - ${new Date().toLocaleString('pt-BR')}`,
+                    content: content,
+                    branch: GITHUB_CONFIG.branch
+                };
+                
+                if (sha) {
+                    body.sha = sha;
+                }
+                
+                const response = await fetch(`https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${path}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `token ${token}`,
+                        'Accept': 'application/vnd.github.v3+json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(body)
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`Erro ao atualizar ${path}: ${response.statusText}`);
+                }
+                
+                console.log(`Arquivo ${path} sincronizado com sucesso`);
+                
+            } catch (error) {
+                console.error(`Erro ao sincronizar ${path}:`, error);
+                throw error;
+            }
+        }
+
+        function updateSyncStatus(status, message) {
+            const dot = document.getElementById('syncDot');
+            const statusText = document.getElementById('syncStatus');
+            
+            dot.className = 'sync-dot';
+            if (status === 'loading') {
+                dot.classList.add('loading');
+            } else if (status === 'error') {
+                dot.classList.add('error');
+            }
+            
+            statusText.textContent = message;
+        }
+
+        // Gestão de Equipamentos
+        function abrirModalEquipamento(edit = false, id = null) {
+            if (edit && id) {
+                const equipamento = equipamentos.find(e => e.id === id);
+                if (equipamento) {
+                    document.getElementById('modalEquipamentoTitle').textContent = 'Editar Equipamento';
+                    document.getElementById('placaEquipamento').value = equipamento.placa;
+                    document.getElementById('tipoEquipamento').value = equipamento.tipo;
+                    document.getElementById('statusEquipamento').value = equipamento.status;
+                    document.getElementById('regimeEquipamento').value = equipamento.regime;
+                    
+                    // Carregar implementos necessários
+                    carregarImplementosNecessarios(equipamento.implementos);
+                    
+                    // Armazenar ID para edição
+                    document.getElementById('placaEquipamento').setAttribute('data-edit-id', id);
+                }
+            } else {
+                document.getElementById('modalEquipamentoTitle').textContent = 'Cadastrar Equipamento';
+                clearEquipamentoForm();
+            }
+            document.getElementById('modalEquipamento').classList.add('show');
+        }
+
+        function clearEquipamentoForm() {
+            document.getElementById('placaEquipamento').value = '';
+            document.getElementById('tipoEquipamento').value = '';
+            document.getElementById('statusEquipamento').value = 'Operacional';
+            document.getElementById('regimeEquipamento').value = '24HS';
+            document.getElementById('placaEquipamento').removeAttribute('data-edit-id');
+            document.getElementById('implementosNecessarios').innerHTML = '';
+        }
+
+        function carregarImplementosNecessarios(implementos) {
+            const container = document.getElementById('implementosNecessarios');
+            container.innerHTML = '';
+            
+            Object.entries(implementos || {}).forEach(([codigo, config]) => {
+                const tipoImplemento = tiposImplementos.find(t => t.codigo === codigo);
+                if (tipoImplemento) {
+                    adicionarImplementoNecessarioItem(tipoImplemento, config.necessario);
+                }
+            });
+        }
+
+        function adicionarImplementoNecessario() {
+            const container = document.getElementById('implementosNecessarios');
+            const index = container.children.length;
+            
+            const div = document.createElement('div');
+            div.className = 'form-grid';
+            div.style.marginBottom = '1rem';
+            div.style.alignItems = 'end';
+            
+            div.innerHTML = `
+                <div class="form-group">
+                    <label class="form-label">Tipo de Implemento</label>
+                    <select class="form-input implemento-select" name="implemento_${index}">
+                        <option value="">Selecione...</option>
+                        ${tiposImplementos.map(t => `<option value="${t.codigo}">${t.nome}</option>`).join('')}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Quantidade Necessária</label>
+                    <input type="number" class="form-input quantidade-necessaria" name="quantidade_${index}" 
+                           min="1" value="1" placeholder="Qtd">
+                </div>
+                <div class="form-group">
+                    <button type="button" class="btn btn-danger btn-sm" onclick="this.closest('.form-grid').remove()">
+                        Remover
+                    </button>
+                </div>
+            `;
+            
+            container.appendChild(div);
+        }
+
+        function adicionarImplementoNecessarioItem(tipoImplemento, quantidade) {
+            const container = document.getElementById('implementosNecessarios');
+            const index = container.children.length;
+            
+            const div = document.createElement('div');
+            div.className = 'form-grid';
+            div.style.marginBottom = '1rem';
+            div.style.alignItems = 'end';
+            
+            div.innerHTML = `
+                <div class="form-group">
+                    <label class="form-label">Tipo de Implemento</label>
+                    <select class="form-input implemento-select" name="implemento_${index}">
+                        <option value="">Selecione...</option>
+                        ${tiposImplementos.map(t => `
+                            <option value="${t.codigo}" ${t.codigo === tipoImplemento.codigo ? 'selected' : ''}>
+                                ${t.nome}
+                            </option>
+                        `).join('')}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Quantidade Necessária</label>
+                    <input type="number" class="form-input quantidade-necessaria" name="quantidade_${index}" 
+                           min="1" value="${quantidade}" placeholder="Qtd">
+                </div>
+                <div class="form-group">
+                    <button type="button" class="btn btn-danger btn-sm" onclick="this.closest('.form-grid').remove()">
+                        Remover
+                    </button>
+                </div>
+            `;
+            
+            container.appendChild(div);
+        }
+
+        function salvarEquipamento() {
+            const placa = document.getElementById('placaEquipamento').value;
+            const tipo = document.getElementById('tipoEquipamento').value;
+            const status = document.getElementById('statusEquipamento').value;
+            const regime = document.getElementById('regimeEquipamento').value;
+            const editId = document.getElementById('placaEquipamento').getAttribute('data-edit-id');
+            
+            if (!placa || !tipo) {
+                showNotification('Preencha todos os campos obrigatórios!', 'warning');
+                return;
+            }
+            
+            // Coletar implementos necessários
+            const implementos = {};
+            const container = document.getElementById('implementosNecessarios');
+            
+            Array.from(container.children).forEach(child => {
+                const select = child.querySelector('.implemento-select');
+                const quantidadeInput = child.querySelector('.quantidade-necessaria');
+                
+                if (select.value && quantidadeInput.value) {
+                    implementos[select.value] = {
+                        quantidade: 0, // Quantidade atual (será definida na visão geral)
+                        necessario: parseInt(quantidadeInput.value)
+                    };
+                }
+            });
+            
+            const equipamentoData = {
+                id: editId || 'EQ' + Date.now(),
+                placa,
+                tipo,
+                status,
+                regime,
+                implementos,
+                dataCadastro: new Date().toISOString()
+            };
+            
+            if (editId) {
+                const index = equipamentos.findIndex(e => e.id === editId);
+                if (index !== -1) {
+                    // Manter quantidades atuais dos implementos existentes
+                    const equipamentoExistente = equipamentos[index];
+                    Object.keys(implementos).forEach(codigo => {
+                        if (equipamentoExistente.implementos[codigo]) {
+                            implementos[codigo].quantidade = equipamentoExistente.implementos[codigo].quantidade;
+                        }
+                    });
+                    equipamentoData.implementos = implementos;
+                    equipamentos[index] = equipamentoData;
+                }
+            } else {
+                equipamentos.push(equipamentoData);
+            }
+            
+            saveLocalData();
+            updateAllTables();
+            updateStatistics();
+            updateFilters();
+            updateEquipmentGrid();
+            closeModal('modalEquipamento');
+            
+            showNotification(`Equipamento ${editId ? 'atualizado' : 'cadastrado'} com sucesso!`, 'success');
+            
+            if (navigator.onLine) {
+                syncData();
+            }
+        }
+
+        function removerEquipamento(id) {
+            if (confirm('Tem certeza que deseja remover este equipamento?')) {
+                equipamentos = equipamentos.filter(e => e.id !== id);
+                saveLocalData();
+                updateAllTables();
+                updateStatistics();
+                updateEquipmentGrid();
+                showNotification('Equipamento removido!', 'info');
+                
+                if (navigator.onLine) {
+                    syncData();
+                }
+            }
+        }
+
+        // Gestão de Implementos
+        function abrirModalImplemento(edit = false, codigo = null) {
+            if (edit && codigo) {
+                const implemento = tiposImplementos.find(i => i.codigo === codigo);
+                if (implemento) {
+                    document.getElementById('modalImplementoTitle').textContent = 'Editar Tipo de Implemento';
+                    document.getElementById('codigoImplemento').value = implemento.codigo;
+                    document.getElementById('codigoImplemento').disabled = true;
+                    document.getElementById('nomeImplemento').value = implemento.nome;
+                    document.getElementById('tipoImplemento').value = implemento.tipo;
+                    document.getElementById('descricaoImplemento').value = implemento.descricao || '';
+                }
+            } else {
+                document.getElementById('modalImplementoTitle').textContent = 'Cadastrar Tipo de Implemento';
+                document.getElementById('codigoImplemento').disabled = false;
+                clearImplementoForm();
+            }
+            document.getElementById('modalImplemento').classList.add('show');
+        }
+
+        function clearImplementoForm() {
+            document.getElementById('codigoImplemento').value = '';
+            document.getElementById('nomeImplemento').value = '';
+            document.getElementById('tipoImplemento').value = '';
+            document.getElementById('descricaoImplemento').value = '';
+        }
+
+        function salvarImplemento() {
+            const codigo = document.getElementById('codigoImplemento').value;
+            const nome = document.getElementById('nomeImplemento').value;
+            const tipo = document.getElementById('tipoImplemento').value;
+            const descricao = document.getElementById('descricaoImplemento').value;
+            const isEdit = document.getElementById('codigoImplemento').disabled;
+            
+            if (!codigo || !nome || !tipo) {
+                showNotification('Preencha todos os campos obrigatórios!', 'warning');
+                return;
+            }
+            
+            if (!isEdit && tiposImplementos.find(i => i.codigo === codigo)) {
+                showNotification('Código de implemento já cadastrado!', 'error');
+                return;
+            }
+            
+            const implementoData = {
+                codigo,
+                nome,
+                tipo,
+                descricao
+            };
+            
+            if (isEdit) {
+                const index = tiposImplementos.findIndex(i => i.codigo === codigo);
+                if (index !== -1) {
+                    tiposImplementos[index] = implementoData;
+                }
+            } else {
+                tiposImplementos.push(implementoData);
+            }
+            
+            saveLocalData();
+            updateAllTables();
+            updateStatistics();
+            updateFilters();
+            updateEquipmentGrid();
+            closeModal('modalImplemento');
+            
+            showNotification(`Tipo de implemento ${isEdit ? 'atualizado' : 'cadastrado'} com sucesso!`, 'success');
+            
+            if (navigator.onLine) {
+                syncData();
+            }
+        }
+
+        function removerImplemento(codigo) {
+            // Verificar se está sendo usado em algum equipamento
+            const usado = equipamentos.some(eq => eq.implementos[codigo]);
+            
+            if (usado) {
+                showNotification('Este implemento está sendo usado por equipamentos e não pode ser removido!', 'warning');
+                return;
+            }
+            
+            if (confirm('Tem certeza que deseja remover este tipo de implemento?')) {
+                tiposImplementos = tiposImplementos.filter(i => i.codigo !== codigo);
+                saveLocalData();
+                updateAllTables();
+                updateStatistics();
+                updateEquipmentGrid();
+                showNotification('Tipo de implemento removido!', 'info');
+                
+                if (navigator.onLine) {
+                    syncData();
+                }
+            }
+        }
+
+        // Sistema de Quantidade de Implementos
+        function atualizarQuantidadeImplemento(equipamentoId, codigoImplemento, novaQuantidade) {
+            const equipamento = equipamentos.find(e => e.id === equipamentoId);
+            if (!equipamento || !equipamento.implementos[codigoImplemento]) return;
+            
+            const quantidadeAnterior = equipamento.implementos[codigoImplemento].quantidade;
+            equipamento.implementos[codigoImplemento].quantidade = parseInt(novaQuantidade) || 0;
+            
+            // Registrar no histórico
+            const tipoImplemento = tiposImplementos.find(t => t.codigo === codigoImplemento);
+            const diferenca = parseInt(novaQuantidade) - quantidadeAnterior;
+            
+            if (diferenca !== 0) {
+                historico.unshift({
+                    equipamento: equipamento.placa,
+                    implemento: tipoImplemento ? tipoImplemento.nome : codigoImplemento,
+                    operacao: diferenca > 0 ? 'Adição' : 'Remoção',
+                    quantidade: Math.abs(diferenca),
+                    quantidadeAnterior: quantidadeAnterior,
+                    quantidadeAtual: parseInt(novaQuantidade),
+                    responsavel: currentUser || 'Sistema',
+                    observacao: `Atualização via sistema - ${diferenca > 0 ? '+' : ''}${diferenca}`,
+                    dataHora: new Date().toISOString()
+                });
+            }
+            
+            saveLocalData();
+            updateEquipmentGrid();
+            updateStatistics();
+            
+            if (navigator.onLine) {
+                syncData();
+            }
+        }
+
+        // Interface - Equipamentos
+        function updateEquipmentGrid() {
+            const grid = document.getElementById('equipmentGrid');
+            
+            if (equipamentos.length === 0) {
+                grid.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 3rem; color: var(--gray-500);">
+                        <p>Nenhum equipamento cadastrado</p>
+                        <p style="font-size: 0.875rem; margin-top: 0.5rem;">
+                            Clique em "Novo Equipamento" para começar
+                        </p>
+                    </div>
+                `;
+                return;
+            }
+            
+            grid.innerHTML = equipamentos.map(eq => {
+                const statusImplementos = calcularStatusImplementos(eq);
+                const alertClass = statusImplementos.critico > 0 ? 'danger' : 
+                                 statusImplementos.defasagem > 0 ? 'warning' : '';
+                
+                const alertBadge = alertClass ? 
+                    `<div class="alert-badge ${alertClass}">
+                        ${alertClass === 'danger' ? 'CRÍTICO' : 'DEFASAGEM'}
+                     </div>` : '';
+                
+                return `
+                    <div class="equipment-card ${alertClass}" data-placa="${eq.placa}" data-tipo="${eq.tipo}" data-status="${alertClass}">
+                        ${alertBadge}
+                        <div class="equipment-header">
+                            <div class="equipment-info">
+                                <h3>${eq.placa}</h3>
+                                <div class="equipment-details">${eq.tipo}</div>
+                            </div>
+                            <button class="btn btn-sm" onclick="abrirModalEquipamento(true, '${eq.id}')">
+                                Editar
+                            </button>
+                        </div>
+                        
+                        <div class="equipment-status">
+                            <span class="status-badge status-${eq.status.toLowerCase().replace('ção', 'cao')}">
+                                ${eq.status}
+                            </span>
+                            <span class="status-badge regime-badge">
+                                ${eq.regime}
+                            </span>
+                        </div>
+                        
+                        <div class="equipment-implements">
+                            <div class="implements-header">
+                                <span class="implements-title">Implementos</span>
+                                <span class="implements-count">${Object.keys(eq.implementos).length}</span>
+                            </div>
+                            
+                            ${Object.keys(eq.implementos).length > 0 ? 
+                                Object.entries(eq.implementos).map(([codigo, config]) => {
+                                    const tipoImplemento = tiposImplementos.find(t => t.codigo === codigo);
+                                    const status = config.quantidade < config.necessario ? 
+                                                 (config.quantidade === 0 ? 'danger' : 'warning') : '';
+                                    
+                                    return `
+                                        <div class="implement-item ${status}">
+                                            <span class="implement-name">
+                                                ${tipoImplemento ? tipoImplemento.nome : codigo}
+                                            </span>
+                                            <div class="implement-quantity">
+                                                <input type="number" class="quantity-input" 
+                                                       value="${config.quantidade}" min="0"
+                                                       onchange="atualizarQuantidadeImplemento('${eq.id}', '${codigo}', this.value)">
+                                                <span class="quantity-display ${status}">
+                                                    / ${config.necessario}
+                                                </span>
+                                            </div>
+                                            <div class="implement-actions">
+                                                <button class="implement-btn" 
+                                                        onclick="ajustarQuantidade('${eq.id}', '${codigo}', 1)" 
+                                                        title="Adicionar 1">+</button>
+                                                <button class="implement-btn" 
+                                                        onclick="ajustarQuantidade('${eq.id}', '${codigo}', -1)" 
+                                                        title="Remover 1">-</button>
+                                            </div>
+                                        </div>
+                                    `;
+                                }).join('') : 
+                                '<div style="text-align: center; color: var(--gray-500); font-size: 0.8rem; padding: 1rem;">Nenhum implemento configurado</div>'
+                            }
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function calcularStatusImplementos(equipamento) {
+            let critico = 0;
+            let defasagem = 0;
+            
+            Object.values(equipamento.implementos).forEach(config => {
+                if (config.quantidade === 0) {
+                    critico++;
+                } else if (config.quantidade < config.necessario) {
+                    defasagem++;
+                }
+            });
+            
+            return { critico, defasagem };
+        }
+
+        function ajustarQuantidade(equipamentoId, codigoImplemento, delta) {
+            const equipamento = equipamentos.find(e => e.id === equipamentoId);
+            if (!equipamento || !equipamento.implementos[codigoImplemento]) return;
+            
+            const novaQuantidade = Math.max(0, equipamento.implementos[codigoImplemento].quantidade + delta);
+            atualizarQuantidadeImplemento(equipamentoId, codigoImplemento, novaQuantidade);
+        }
+
+        // Filtros da Visão Geral
+        function filtrarEquipamentosVisaoGeral() {
+            const filtroPlaca = document.getElementById('filtroPlaca').value.toLowerCase();
+            const filtroTipo = document.getElementById('filtroTipoVisaoGeral').value;
+            const filtroStatus = document.getElementById('filtroStatusImplementos').value;
+            
+            const cards = document.querySelectorAll('.equipment-card');
+            
+            cards.forEach(card => {
+                const placa = card.getAttribute('data-placa').toLowerCase();
+                const tipo = card.getAttribute('data-tipo');
+                const status = card.getAttribute('data-status');
+                
+                const shouldShow = 
+                    (!filtroPlaca || placa.includes(filtroPlaca)) &&
+                    (!filtroTipo || tipo === filtroTipo) &&
+                    (!filtroStatus || 
+                     (filtroStatus === 'ok' && !status) ||
+                     (filtroStatus === 'warning' && status === 'warning') ||
+                     (filtroStatus === 'danger' && status === 'danger'));
+                
+                card.style.display = shouldShow ? '' : 'none';
+            });
+        }
+
+        function limparFiltros() {
+            document.getElementById('filtroPlaca').value = '';
+            document.getElementById('filtroTipoVisaoGeral').value = '';
+            document.getElementById('filtroStatusImplementos').value = '';
+            filtrarEquipamentosVisaoGeral();
+        }
+
+        // Atualização de Tabelas
+        function updateAllTables() {
+            updateTabelaEquipamentos();
+            updateTabelaImplementos();
+            updateTabelaHistorico();
+            updateTabelaUsuarios();
+        }
+
+        function updateTabelaEquipamentos() {
+            const tbody = document.getElementById('equipamentosTableBody');
+            
+            if (equipamentos.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 2rem; color: var(--gray-500);">
+                            Nenhum equipamento cadastrado
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            tbody.innerHTML = equipamentos.map(eq => `
+                <tr>
+                    <td>${eq.placa}</td>
+                    <td>${eq.tipo}</td>
+                    <td>
+                        <span class="status-badge status-${eq.status.toLowerCase().replace('ção', 'cao')}">
+                            ${eq.status}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="status-badge regime-badge">
+                            ${eq.regime}
+                        </span>
+                    </td>
+                    <td>${Object.keys(eq.implementos).length}</td>
+                    <td>
+                        <button class="btn btn-sm" onclick="abrirModalEquipamento(true, '${eq.id}')">
+                            Editar
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="removerEquipamento('${eq.id}')">
+                            Remover
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function updateTabelaImplementos() {
+            const tbody = document.getElementById('implementosTableBody');
+            
+            if (tiposImplementos.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 2rem; color: var(--gray-500);">
+                            Nenhum tipo de implemento cadastrado
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            tbody.innerHTML = tiposImplementos.map(imp => {
+                // Calcular total em uso
+                let totalEmUso = 0;
+                equipamentos.forEach(eq => {
+                    if (eq.implementos[imp.codigo]) {
+                        totalEmUso += eq.implementos[imp.codigo].quantidade;
+                    }
+                });
+                
+                return `
+                    <tr>
+                        <td>${imp.codigo}</td>
+                        <td>${imp.nome}</td>
+                        <td>${imp.tipo}</td>
+                        <td>${imp.descricao || '-'}</td>
+                        <td>${totalEmUso}</td>
+                        <td>
+                            <button class="btn btn-sm" onclick="abrirModalImplemento(true, '${imp.codigo}')">
+                                Editar
+                            </button>
+                            <button class="btn btn-danger btn-sm" onclick="removerImplemento('${imp.codigo}')">
+                                Remover
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function updateTabelaHistorico() {
+            const tbody = document.getElementById('historicoTableBody');
+            
+            if (historico.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 2rem; color: var(--gray-500);">
+                            Nenhuma movimentação registrada
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            tbody.innerHTML = historico.slice(0, 100).map(h => `
+                <tr>
+                    <td>${formatarDataHora(h.dataHora)}</td>
+                    <td>${h.equipamento}</td>
+                    <td>${h.implemento}</td>
+                    <td>
+                        <span class="status-badge ${h.operacao === 'Adição' ? 'status-operacional' : 'status-manutencao'}">
+                            ${h.operacao}
+                        </span>
+                    </td>
+                    <td>${h.quantidade}</td>
+                    <td>${h.responsavel}</td>
+                    <td>${h.observacao || '-'}</td>
+                </tr>
+            `).join('');
+        }
+
+        function updateTabelaUsuarios() {
+            const tbody = document.getElementById('usuariosTableBody');
+            
+            // Combinar usuários padrão e personalizados
+            const allUsers = [];
+            
+            Object.entries(DEFAULT_USERS).forEach(([username, data]) => {
+                allUsers.push({
+                    username,
+                    name: data.name,
+                    level: data.level,
+                    active: data.active,
+                    isDefault: true
+                });
+            });
+            
+            Object.entries(usuarios).forEach(([username, data]) => {
+                allUsers.push({
+                    username,
+                    name: data.name,
+                    level: data.level,
+                    active: data.active,
+                    isDefault: false
+                });
+            });
+            
+            tbody.innerHTML = allUsers.map(u => `
+                <tr>
+                    <td>${u.username}</td>
+                    <td>${u.name}</td>
+                    <td>
+                        <span class="status-badge ${u.level === 'admin' ? 'status-operacional' : 'regime-badge'}">
+                            ${u.level === 'admin' ? 'Administrador' : 'Usuário'}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="status-badge ${u.active ? 'status-operacional' : 'status-inativo'}">
+                            ${u.active ? 'Ativo' : 'Inativo'}
+                        </span>
+                    </td>
+                    <td>
+                        ${!u.isDefault ? `
+                            <button class="btn btn-sm" onclick="editarUsuario('${u.username}')">
+                                Editar
+                            </button>
+                            <button class="btn btn-danger btn-sm" onclick="removerUsuario('${u.username}')">
+                                Remover
+                            </button>
+                        ` : '<em>Usuário do sistema</em>'}
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Estatísticas
+        function updateStatistics() {
+            // Equipamentos
+            const totalEquipamentos = equipamentos.length;
+            const equipamentosOperacionais = equipamentos.filter(e => e.status === 'Operacional').length;
+            
+            // Calcular equipamentos com defasagem
+            let equipamentosComDefasagem = 0;
+            equipamentos.forEach(eq => {
+                const status = calcularStatusImplementos(eq);
+                if (status.critico > 0 || status.defasagem > 0) {
+                    equipamentosComDefasagem++;
+                }
+            });
+            
+            // Tipos de implementos
+            const totalTiposImplementos = tiposImplementos.length;
+            
+            // Movimentações de hoje
+            const hoje = new Date().toISOString().split('T')[0];
+            const movimentacoesHoje = historico.filter(h => 
+                h.dataHora.split('T')[0] === hoje
+            ).length;
+            
+            // Equipamentos completos (sem defasagem)
+            const equipamentosCompletos = totalEquipamentos - equipamentosComDefasagem;
+            
+            // Total de implementos em uso
+            let totalImplementosUso = 0;
+            equipamentos.forEach(eq => {
+                Object.values(eq.implementos).forEach(config => {
+                    totalImplementosUso += config.quantidade;
+                });
+            });
+            
+            // Utilização da frota
+            const utilizacaoFrota = totalEquipamentos > 0 ? 
+                Math.round((equipamentosOperacionais / totalEquipamentos) * 100) : 0;
+            
+            // Atualizar interface
+            document.getElementById('totalEquipamentos').textContent = totalEquipamentos;
+            document.getElementById('equipamentosOperacionais').textContent = equipamentosOperacionais;
+            document.getElementById('equipamentosComDefasagem').textContent = equipamentosComDefasagem;
+            document.getElementById('totalTiposImplementos').textContent = totalTiposImplementos;
+            document.getElementById('movimentacoesHoje').textContent = movimentacoesHoje;
+            document.getElementById('equipamentosCompletos').textContent = equipamentosCompletos;
+            document.getElementById('totalImplementosUso').textContent = totalImplementosUso;
+            document.getElementById('utilizacaoFrota').textContent = utilizacaoFrota + '%';
+        }
+
+        function updateFilters() {
+            // Filtro de tipos de equipamento
+            const tipos = [...new Set(equipamentos.map(e => e.tipo))].sort();
+            const filtroTipo = document.getElementById('filtroTipo');
+            const filtroTipoVisaoGeral = document.getElementById('filtroTipoVisaoGeral');
+            
+            const tiposOptions = tipos.map(t => `<option value="${t}">${t}</option>`).join('');
+            
+            if (filtroTipo) {
+                filtroTipo.innerHTML = '<option value="">Todos os tipos</option>' + tiposOptions;
+            }
+            if (filtroTipoVisaoGeral) {
+                filtroTipoVisaoGeral.innerHTML = '<option value="">Todos os tipos</option>' + tiposOptions;
+            }
+            
+            // Filtro de tipos de implemento
+            const tiposImplemento = [...new Set(tiposImplementos.map(i => i.tipo))].sort();
+            const filtroTipoImplemento = document.getElementById('filtroTipoImplemento');
+            if (filtroTipoImplemento) {
+                filtroTipoImplemento.innerHTML = '<option value="">Todos os tipos</option>' +
+                    tiposImplemento.map(t => `<option value="${t}">${t}</option>`).join('');
+            }
+        }
+
+        // Funções de Filtro
+        function filtrarEquipamentos() {
+            const busca = document.getElementById('buscarEquipamento').value.toLowerCase();
+            const tipo = document.getElementById('filtroTipo').value;
+            const status = document.getElementById('filtroStatus').value;
+            
+            const rows = document.querySelectorAll('#equipamentosTableBody tr');
+            
+            rows.forEach(row => {
+                const texto = row.textContent.toLowerCase();
+                const shouldShow = texto.includes(busca) &&
+                    (!tipo || row.children[1]?.textContent === tipo) &&
+                    (!status || row.children[2]?.textContent.includes(status));
+                
+                row.style.display = shouldShow ? '' : 'none';
+            });
+        }
+
+        function filtrarImplementos() {
+            const busca = document.getElementById('buscarImplemento').value.toLowerCase();
+            const tipo = document.getElementById('filtroTipoImplemento').value;
+            
+            const rows = document.querySelectorAll('#implementosTableBody tr');
+            
+            rows.forEach(row => {
+                const texto = row.textContent.toLowerCase();
+                const shouldShow = texto.includes(busca) &&
+                    (!tipo || row.children[2]?.textContent === tipo);
+                
+                row.style.display = shouldShow ? '' : 'none';
+            });
+        }
+
+        function filtrarHistorico() {
+            const dataInicial = document.getElementById('dataInicialHistorico').value;
+            const dataFinal = document.getElementById('dataFinalHistorico').value;
+            const implemento = document.getElementById('implementoHistorico').value.toLowerCase();
+            
+            const rows = document.querySelectorAll('#historicoTableBody tr');
+            
+            rows.forEach(row => {
+                const dataTexto = row.children[0]?.textContent || '';
+                const implementoTexto = row.children[2]?.textContent.toLowerCase() || '';
+                
+                // Extrair data do formato DD/MM/AAAA HH:MM
+                const dataMatch = dataTexto.match(/(\d{2})\/(\d{2})\/(\d{4})/);
+                const dataFormatted = dataMatch ? 
+                    `${dataMatch[3]}-${dataMatch[2]}-${dataMatch[1]}` : '';
+                
+                const shouldShow = 
+                    (!dataInicial || dataFormatted >= dataInicial) &&
+                    (!dataFinal || dataFormatted <= dataFinal) &&
+                    (!implemento || implementoTexto.includes(implemento));
+                
+                row.style.display = shouldShow ? '' : 'none';
+            });
+        }
+
+        // Gestão de Usuários
+        function abrirModalNovoUsuario() {
+            document.getElementById('novoUsuario').value = '';
+            document.getElementById('novoUsuario').disabled = false;
+            document.getElementById('novoNomeCompleto').value = '';
+            document.getElementById('novaSenha').value = '';
+            document.getElementById('novoNivelAcesso').value = 'user';
+            document.querySelector('#modalNovoUsuario .modal-title').textContent = 'Novo Usuário';
+            document.getElementById('modalNovoUsuario').classList.add('show');
+        }
+
+        function editarUsuario(username) {
+            const user = usuarios[username];
+            if (!user) return;
+            
+            document.getElementById('novoUsuario').value = username;
+            document.getElementById('novoUsuario').disabled = true;
+            document.getElementById('novoNomeCompleto').value = user.name;
+            document.getElementById('novaSenha').value = user.password;
+            document.getElementById('novoNivelAcesso').value = user.level;
+            document.querySelector('#modalNovoUsuario .modal-title').textContent = 'Editar Usuário';
+            document.getElementById('modalNovoUsuario').classList.add('show');
+        }
+
+        function salvarNovoUsuario() {
+            const username = document.getElementById('novoUsuario').value.toLowerCase();
+            const name = document.getElementById('novoNomeCompleto').value;
+            const password = document.getElementById('novaSenha').value;
+            const level = document.getElementById('novoNivelAcesso').value;
+            const isEdit = document.getElementById('novoUsuario').disabled;
+            
+            if (!username || !name || !password) {
+                showNotification('Preencha todos os campos!', 'warning');
+                return;
+            }
+            
+            if (!isEdit && (DEFAULT_USERS[username] || usuarios[username])) {
+                showNotification('Usuário já existe!', 'error');
+                return;
+            }
+            
+            usuarios[username] = {
+                name,
+                password,
+                level,
+                active: true,
+                createdAt: usuarios[username]?.createdAt || new Date().toISOString()
+            };
+            
+            saveLocalData();
+            updateTabelaUsuarios();
+            closeModal('modalNovoUsuario');
+            
+            showNotification(`Usuário ${isEdit ? 'atualizado' : 'criado'} com sucesso!`, 'success');
+            
+            if (navigator.onLine) {
+                syncData();
+            }
+        }
+
+        function removerUsuario(username) {
+            if (confirm(`Tem certeza que deseja remover o usuário ${username}?`)) {
+                delete usuarios[username];
+                saveLocalData();
+                updateTabelaUsuarios();
+                showNotification('Usuário removido!', 'info');
+                
+                if (navigator.onLine) {
+                    syncData();
+                }
+            }
+        }
+
+        // Funções de Exportação
+        function exportarEquipamentos() {
+            const dados = equipamentos.map(eq => {
+                const implementosStr = Object.entries(eq.implementos).map(([codigo, config]) => {
+                    const tipo = tiposImplementos.find(t => t.codigo === codigo);
+                    return `${tipo ? tipo.nome : codigo}: ${config.quantidade}/${config.necessario}`;
+                }).join('; ');
+                
+                return {
+                    'Placa/ID': eq.placa,
+                    'Tipo': eq.tipo,
+                    'Status': eq.status,
+                    'Regime': eq.regime,
+                    'Implementos': implementosStr,
+                    'Data Cadastro': formatarDataHora(eq.dataCadastro)
+                };
+            });
+            
+            exportarExcel(dados, 'Equipamentos');
+        }
+
+        function exportarImplementos() {
+            const dados = tiposImplementos.map(imp => {
+                // Calcular total em uso
+                let totalEmUso = 0;
+                equipamentos.forEach(eq => {
+                    if (eq.implementos[imp.codigo]) {
+                        totalEmUso += eq.implementos[imp.codigo].quantidade;
+                    }
+                });
+                
+                return {
+                    'Código': imp.codigo,
+                    'Nome': imp.nome,
+                    'Tipo': imp.tipo,
+                    'Descrição': imp.descricao || '',
+                    'Total em Uso': totalEmUso
+                };
+            });
+            
+            exportarExcel(dados, 'Tipos_Implementos');
+        }
+
+        function exportarHistorico() {
+            const dados = historico.map(h => ({
+                'Data/Hora': formatarDataHora(h.dataHora),
+                'Equipamento': h.equipamento,
+                'Implemento': h.implemento,
+                'Operação': h.operacao,
+                'Quantidade': h.quantidade,
+                'Quantidade Anterior': h.quantidadeAnterior || '',
+                'Quantidade Atual': h.quantidadeAtual || '',
+                'Responsável': h.responsavel,
+                'Observações': h.observacao || ''
+            }));
+            
+            exportarExcel(dados, 'Historico_Movimentacoes');
+        }
+
+        function exportarExcel(dados, nomeArquivo) {
+            const ws = XLSX.utils.json_to_sheet(dados);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, nomeArquivo);
+            
+            const arquivo = `${nomeArquivo}_${new Date().toLocaleDateString('pt-BR').replace(/\//g, '_')}.xlsx`;
+            XLSX.writeFile(wb, arquivo);
+            
+            showNotification(`${nomeArquivo} exportado com sucesso!`, 'success');
+        }
+
+        // Relatórios
+        function gerarRelatorio() {
+            const periodoInicial = document.getElementById('periodoInicial').value;
+            const periodoFinal = document.getElementById('periodoFinal').value;
+            const tipoRelatorio = document.getElementById('tipoRelatorio').value;
+            
+            if (!periodoInicial || !periodoFinal) {
+                showNotification('Selecione o período!', 'warning');
+                return;
+            }
+            
+            const historicoFiltrado = historico.filter(h => {
+                const dataHistorico = new Date(h.dataHora);
+                const dataInicial = new Date(periodoInicial);
+                const dataFinal = new Date(periodoFinal);
+                
+                return dataHistorico >= dataInicial && dataHistorico <= dataFinal;
+            });
+            
+            let relatorioHTML = '';
+            
+            switch(tipoRelatorio) {
+                case 'geral':
+                    relatorioHTML = gerarRelatorioGeral(historicoFiltrado, periodoInicial, periodoFinal);
+                    break;
+                case 'por_equipamento':
+                    relatorioHTML = gerarRelatorioPorEquipamento(historicoFiltrado, periodoInicial, periodoFinal);
+                    break;
+                case 'por_implemento':
+                    relatorioHTML = gerarRelatorioPorImplemento(historicoFiltrado, periodoInicial, periodoFinal);
+                    break;
+                case 'defasagens':
+                    relatorioHTML = gerarRelatorioDefasagens();
+                    break;
+            }
+            
+            document.getElementById('relatorioConteudo').innerHTML = relatorioHTML;
+            document.getElementById('relatorioResultado').classList.remove('hidden');
+        }
+
+        function gerarRelatorioGeral(historicoFiltrado, periodoInicial, periodoFinal) {
+            const totalMovimentacoes = historicoFiltrado.length;
+            const equipamentosEnvolvidos = new Set(historicoFiltrado.map(h => h.equipamento)).size;
+            const implementosMovimentados = new Set(historicoFiltrado.map(h => h.implemento)).size;
+            
+            return `
+                <div class="stats-grid" style="margin-bottom: 2rem;">
+                    <div class="stat-card">
+                        <div class="stat-value">${totalMovimentacoes}</div>
+                        <div class="stat-label">Total de Movimentações</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${equipamentosEnvolvidos}</div>
+                        <div class="stat-label">Equipamentos Envolvidos</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${implementosMovimentados}</div>
+                        <div class="stat-label">Tipos de Implementos</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${equipamentos.length}</div>
+                        <div class="stat-label">Total de Equipamentos</div>
+                    </div>
+                </div>
+                
+                <h4>Resumo do Período</h4>
+                <p>Período analisado: ${formatarData(periodoInicial)} a ${formatarData(periodoFinal)}</p>
+                <p>Total de movimentações: <strong>${totalMovimentacoes}</strong></p>
+                <p>Equipamentos envolvidos: <strong>${equipamentosEnvolvidos}</strong></p>
+                <p>Tipos de implementos movimentados: <strong>${implementosMovimentados}</strong></p>
+            `;
+        }
+
+        function gerarRelatorioPorEquipamento(historicoFiltrado, periodoInicial, periodoFinal) {
+            const movimentacoesPorEquipamento = {};
+            
+            historicoFiltrado.forEach(h => {
+                movimentacoesPorEquipamento[h.equipamento] = (movimentacoesPorEquipamento[h.equipamento] || 0) + 1;
+            });
+            
+            const equipamentosOrdenados = Object.entries(movimentacoesPorEquipamento)
+                .sort(([,a], [,b]) => b - a);
+            
+            return `
+                <h4>Movimentações por Equipamento</h4>
+                <p>Período: ${formatarData(periodoInicial)} a ${formatarData(periodoFinal)}</p>
+                
+                <div class="table-container" style="margin-top: 1rem;">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Equipamento</th>
+                                <th>Total de Movimentações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${equipamentosOrdenados.map(([equipamento, total]) => `
+                                <tr>
+                                    <td>${equipamento}</td>
+                                    <td>${total}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        function gerarRelatorioPorImplemento(historicoFiltrado, periodoInicial, periodoFinal) {
+            const movimentacoesPorImplemento = {};
+            
+            historicoFiltrado.forEach(h => {
+                movimentacoesPorImplemento[h.implemento] = (movimentacoesPorImplemento[h.implemento] || 0) + 1;
+            });
+            
+            const implementosOrdenados = Object.entries(movimentacoesPorImplemento)
+                .sort(([,a], [,b]) => b - a);
+            
+            return `
+                <h4>Movimentações por Tipo de Implemento</h4>
+                <p>Período: ${formatarData(periodoInicial)} a ${formatarData(periodoFinal)}</p>
+                
+                <div class="table-container" style="margin-top: 1rem;">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Implemento</th>
+                                <th>Total de Movimentações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${implementosOrdenados.map(([implemento, total]) => `
+                                <tr>
+                                    <td>${implemento}</td>
+                                    <td>${total}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        function gerarRelatorioDefasagens() {
+            const equipamentosComDefasagem = [];
+            
+            equipamentos.forEach(eq => {
+                const defasagens = [];
+                Object.entries(eq.implementos).forEach(([codigo, config]) => {
+                    if (config.quantidade < config.necessario) {
+                        const tipoImplemento = tiposImplementos.find(t => t.codigo === codigo);
+                        defasagens.push({
+                            implemento: tipoImplemento ? tipoImplemento.nome : codigo,
+                            atual: config.quantidade,
+                            necessario: config.necessario,
+                            falta: config.necessario - config.quantidade
+                        });
+                    }
+                });
+                
+                if (defasagens.length > 0) {
+                    equipamentosComDefasagem.push({
+                        equipamento: eq,
+                        defasagens: defasagens
+                    });
+                }
+            });
+            
+            if (equipamentosComDefasagem.length === 0) {
+                return `
+                    <div style="text-align: center; padding: 2rem; color: var(--success-color);">
+                        <h4>✓ Todos os equipamentos estão completos!</h4>
+                        <p>Nenhuma defasagem de implementos encontrada.</p>
+                    </div>
+                `;
+            }
+            
+            return `
+                <h4>Análise de Defasagens de Implementos</h4>
+                <p>Equipamentos com implementos em falta: <strong>${equipamentosComDefasagem.length}</strong></p>
+                
+                ${equipamentosComDefasagem.map(item => `
+                    <div style="margin-bottom: 1.5rem; border: 1px solid var(--warning-color); border-radius: 8px; padding: 1rem;">
+                        <h5 style="color: var(--warning-color); margin-bottom: 1rem;">
+                            ${item.equipamento.placa} - ${item.equipamento.tipo}
+                        </h5>
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Implemento</th>
+                                        <th>Atual</th>
+                                        <th>Necessário</th>
+                                        <th>Falta</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${item.defasagens.map(def => `
+                                        <tr>
+                                            <td>${def.implemento}</td>
+                                            <td>${def.atual}</td>
+                                            <td>${def.necessario}</td>
+                                            <td style="color: var(--danger-color); font-weight: bold;">${def.falta}</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `).join('')}
+            `;
+        }
+
+        // Configurações
+        function carregarConfiguracoes() {
+            if (configuracoes.githubToken) {
+                document.getElementById('githubToken').value = configuracoes.githubToken;
+                GITHUB_CONFIG.token = configuracoes.githubToken;
+            }
+            
+            if (configuracoes.nomeEmpresa) {
+                document.getElementById('nomeEmpresa').value = configuracoes.nomeEmpresa;
+            }
+            
+            if (configuracoes.autoSaveInterval) {
+                document.getElementById('autoSaveInterval').value = configuracoes.autoSaveInterval;
+            }
+            
+            if (configuracoes.loginEnabled !== undefined) {
+                document.getElementById('ativarLogin').value = configuracoes.loginEnabled.toString();
+                toggleLoginSystem();
+            }
+        }
+
+        function testarConexaoGitHub() {
+            const token = document.getElementById('githubToken').value;
+            if (!token) {
+                showNotification('Informe o token primeiro!', 'warning');
+                return;
+            }
+            
+            showNotification('Testando conexão...', 'info');
+            
+            fetch(`https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}`, {
+                headers: {
+                    'Authorization': `token ${token}`,
+                    'Accept': 'application/vnd.github.v3+json'
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    showNotification('Conexão testada com sucesso!', 'success');
+                } else {
+                    throw new Error('Falha na autenticação ou repositório não encontrado');
+                }
+            })
+            .catch(error => {
+                showNotification('Erro na conexão: ' + error.message, 'error');
+            });
+        }
+
+        function salvarConfigGitHub() {
+            const token = document.getElementById('githubToken').value;
+            
+            if (token) {
+                GITHUB_CONFIG.token = token;
+                configuracoes.githubToken = token;
+                saveLocalData();
+                showNotification('Configurações do GitHub salvas!', 'success');
+                
+                // Testar sincronização
+                syncData();
+            } else {
+                showNotification('Informe o token do GitHub!', 'warning');
+            }
+        }
+
+        function salvarConfigGerais() {
+            const nomeEmpresa = document.getElementById('nomeEmpresa').value;
+            const autoSave = document.getElementById('autoSaveInterval').value;
+            
+            configuracoes.nomeEmpresa = nomeEmpresa;
+            configuracoes.autoSaveInterval = parseInt(autoSave);
+            
+            saveLocalData();
+            showNotification('Configurações salvas!', 'success');
+        }
+
+        function resetarSistema() {
+            if (confirm('ATENÇÃO: Isso irá apagar todos os dados do sistema. Tem certeza?')) {
+                if (confirm('Esta ação não pode ser desfeita. Confirma o reset completo?')) {
+                    localStorage.clear();
+                    location.reload();
+                }
+            }
+        }
+
+        // Funções de Interface
+        function switchTab(tabName) {
+            document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+            const button = document.querySelector(`[onclick="switchTab('${tabName}')"]`);
+            const tabContent = document.getElementById(tabName + '-tab');
+
+            if (button) button.classList.add('active');
+            if (tabContent) tabContent.classList.add('active');
+            
+            // Atualizar dados da aba específica
+            switch(tabName) {
+                case 'visao-geral':
+                    updateEquipmentGrid();
+                    updateStatistics();
+                    break;
+                case 'equipamentos':
+                case 'implementos':
+                case 'historico':
+                    updateAllTables();
+                    updateStatistics();
+                    break;
+                case 'relatorios':
+                    updateStatistics();
+                    break;
+                case 'configuracoes':
+                    updateTabelaUsuarios();
+                    break;
+            }
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('show');
+        }
+
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOutRight 0.3s ease-in';
+                setTimeout(() => notification.remove(), 300);
+            }, 4000);
+        }
+
+        // Funções Utilitárias
+        function inicializarDataHora() {
+            const agora = new Date();
+            const hoje = agora.toISOString().split('T')[0];
+            
+            // Inicializar campos de relatório e histórico
+            if (document.getElementById('periodoInicial')) {
+                document.getElementById('periodoInicial').value = hoje;
+                document.getElementById('periodoFinal').value = hoje;
+            }
+            
+            if (document.getElementById('dataInicialHistorico')) {
+                document.getElementById('dataInicialHistorico').value = hoje;
+                document.getElementById('dataFinalHistorico').value = hoje;
+            }
+        }
+
+        function formatarData(dataISO) {
+            if (!dataISO) return '-';
+            const [ano, mes, dia] = dataISO.split('-');
+            return `${dia}/${mes}/${ano}`;
+        }
+
+        function formatarDataHora(isoString) {
+            if (!isoString) return '-';
+            const data = new Date(isoString);
+            return `${data.toLocaleDateString('pt-BR')} ${data.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'})}`;
+        }
+
+        console.log('🚛 Sistema de Controle de Equipamentos - GrupoGPS v2.0 carregado!');
+        console.log('✅ Funcionalidades implementadas:');
+        console.log('   - Controle de quantidades de implementos por equipamento');
+        console.log('   - Sistema de defasagem de implementos com alertas visuais');
+        console.log('   - Sincronização automática com GitHub');
+        console.log('   - Sistema de login opcional (configurável)');
+        console.log('   - Histórico completo de movimentações');
+        console.log('   - Relatórios de defasagens e utilização');
+        console.log('   - Interface responsiva e intuitiva');
+        console.log('   - Filtros avançados na visão geral');
+    </script>
+</body>
+</html>
