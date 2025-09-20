@@ -33,7 +33,12 @@
     "tipo": "Caminhão Alta Pressão",
     "status": "Operacional",
     "regime": "ADM",
-    "implementos": {},
-    "dataCadastro": "2025-09-20T18:31:16.018Z"
+    "implementos": {
+      "MANG001": {
+        "quantidade": 0,
+        "necessario": 3
+      }
+    },
+    "dataCadastro": "2025-09-20T18:32:05.236Z"
   }
 ]
