@@ -5,8 +5,13 @@
     "tipo": "Caminhão Auto Vácuo",
     "status": "Operacional",
     "regime": "ADM",
-    "implementos": {},
-    "dataCadastro": "2025-08-10T21:10:56.311Z"
+    "implementos": {
+      "MANG001": {
+        "quantidade": 0,
+        "necessario": 3
+      }
+    },
+    "dataCadastro": "2025-09-20T18:26:54.715Z"
   },
   {
     "id": "EQ1754860486334",
