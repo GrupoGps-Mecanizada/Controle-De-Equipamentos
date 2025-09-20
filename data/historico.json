@@ -1,5 +1,38 @@
 [
   {
+    "equipamento": "DSY-6472",
+    "implemento": "Lance de Mangueira",
+    "operacao": "Adição",
+    "quantidade": 1,
+    "quantidadeAnterior": 2,
+    "quantidadeAtual": 3,
+    "responsavel": "sistema",
+    "observacao": "Atualização via sistema - +1",
+    "dataHora": "2025-09-20T18:32:06.918Z"
+  },
+  {
+    "equipamento": "DSY-6472",
+    "implemento": "Lance de Mangueira",
+    "operacao": "Adição",
+    "quantidade": 1,
+    "quantidadeAnterior": 1,
+    "quantidadeAtual": 2,
+    "responsavel": "sistema",
+    "observacao": "Atualização via sistema - +1",
+    "dataHora": "2025-09-20T18:32:06.703Z"
+  },
+  {
+    "equipamento": "DSY-6472",
+    "implemento": "Lance de Mangueira",
+    "operacao": "Adição",
+    "quantidade": 1,
+    "quantidadeAnterior": 0,
+    "quantidadeAtual": 1,
+    "responsavel": "sistema",
+    "observacao": "Atualização via sistema - +1",
+    "dataHora": "2025-09-20T18:32:06.536Z"
+  },
+  {
     "equipamento": "EAM-3253",
     "implemento": "Lance de Mangueira",
     "operacao": "Adição",
