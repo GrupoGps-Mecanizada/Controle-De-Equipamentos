@@ -4,11 +4,5 @@
     "nome": "Lance de Mangueira",
     "tipo": "Mangueira",
     "descricao": "Lance de mangueira de alta pressão"
-  },
-  {
-    "codigo": "BOMB001",
-    "nome": "Bomba Centrífuga 3\"",
-    "tipo": "Bomba",
-    "descricao": "Bomba centrífuga 3 polegadas"
   }
 ]
