@@ -6,12 +6,12 @@
     "status": "Operacional",
     "regime": "ADM",
     "implementos": {
-      "MANG001": {
+      "MANG-AV003": {
         "quantidade": 0,
-        "necessario": 3
+        "necessario": 2
       }
     },
-    "dataCadastro": "2025-09-20T18:26:54.715Z"
+    "dataCadastro": "2025-09-20T18:30:11.855Z"
   },
   {
     "id": "EQ1754860486334",
