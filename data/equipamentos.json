@@ -21,10 +21,19 @@
     "regime": "24HS",
     "implementos": {
       "MANG001": {
-        "quantidade": 2,
+        "quantidade": 3,
         "necessario": 3
       }
     },
     "dataCadastro": "2025-09-20T18:30:38.308Z"
+  },
+  {
+    "id": "EQ1758393076018",
+    "placa": "DSY-6472",
+    "tipo": "Caminhão Alta Pressão",
+    "status": "Operacional",
+    "regime": "ADM",
+    "implementos": {},
+    "dataCadastro": "2025-09-20T18:31:16.018Z"
   }
 ]
