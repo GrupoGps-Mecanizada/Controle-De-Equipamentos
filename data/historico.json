@@ -1,6 +1,17 @@
 [
   {
     "equipamento": "EAM-3251",
+    "implemento": "Mangote 3",
+    "operacao": "Adição",
+    "quantidade": 1,
+    "quantidadeAnterior": 0,
+    "quantidadeAtual": 1,
+    "responsavel": "sistema",
+    "observacao": "Atualização via sistema - +1",
+    "dataHora": "2025-09-20T18:30:26.525Z"
+  },
+  {
+    "equipamento": "EAM-3251",
     "implemento": "Lance de Mangueira",
     "operacao": "Remoção",
     "quantidade": 1,
