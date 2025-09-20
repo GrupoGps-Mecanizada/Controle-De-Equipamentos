@@ -4,5 +4,11 @@
     "nome": "Lance de Mangueira",
     "tipo": "Mangueira",
     "descricao": "Lance de mangueira de alta pressão"
+  },
+  {
+    "codigo": "MANG-AV003",
+    "nome": "Mangote 3",
+    "tipo": "Mangote 3 polegadas ",
+    "descricao": ""
   }
 ]
