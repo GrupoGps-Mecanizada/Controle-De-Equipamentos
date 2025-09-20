@@ -7,7 +7,7 @@
     "regime": "ADM",
     "implementos": {
       "MANG-AV003": {
-        "quantidade": 0,
+        "quantidade": 1,
         "necessario": 1
       }
     },
@@ -19,7 +19,12 @@
     "tipo": "Caminhão Alta Pressão",
     "status": "Operacional",
     "regime": "24HS",
-    "implementos": {},
-    "dataCadastro": "2025-08-10T21:14:46.334Z"
+    "implementos": {
+      "MANG001": {
+        "quantidade": 0,
+        "necessario": 3
+      }
+    },
+    "dataCadastro": "2025-09-20T18:30:38.308Z"
   }
 ]
