@@ -1,138 +1,39 @@
 [
   {
-    "equipamento": "DSY-6472",
+    "equipamento": "ABC-1234",
     "implemento": "Lance de Mangueira",
     "operacao": "Adição",
-    "quantidade": 1,
-    "quantidadeAnterior": 2,
-    "quantidadeAtual": 3,
-    "responsavel": "sistema",
-    "observacao": "Atualização via sistema - +1",
-    "dataHora": "2025-09-20T18:32:06.918Z"
-  },
-  {
-    "equipamento": "DSY-6472",
-    "implemento": "Lance de Mangueira",
-    "operacao": "Adição",
-    "quantidade": 1,
-    "quantidadeAnterior": 1,
-    "quantidadeAtual": 2,
-    "responsavel": "sistema",
-    "observacao": "Atualização via sistema - +1",
-    "dataHora": "2025-09-20T18:32:06.703Z"
-  },
-  {
-    "equipamento": "DSY-6472",
-    "implemento": "Lance de Mangueira",
-    "operacao": "Adição",
-    "quantidade": 1,
-    "quantidadeAnterior": 0,
-    "quantidadeAtual": 1,
-    "responsavel": "sistema",
-    "observacao": "Atualização via sistema - +1",
-    "dataHora": "2025-09-20T18:32:06.536Z"
-  },
-  {
-    "equipamento": "EAM-3253",
-    "implemento": "Lance de Mangueira",
-    "operacao": "Adição",
-    "quantidade": 1,
-    "quantidadeAnterior": 2,
-    "quantidadeAtual": 3,
-    "responsavel": "sistema",
-    "observacao": "Atualização via sistema - +1",
-    "dataHora": "2025-09-20T18:30:40.055Z"
-  },
-  {
-    "equipamento": "EAM-3253",
-    "implemento": "Lance de Mangueira",
-    "operacao": "Adição",
-    "quantidade": 1,
-    "quantidadeAnterior": 1,
-    "quantidadeAtual": 2,
-    "responsavel": "sistema",
-    "observacao": "Atualização via sistema - +1",
-    "dataHora": "2025-09-20T18:30:39.863Z"
-  },
-  {
-    "equipamento": "EAM-3253",
-    "implemento": "Lance de Mangueira",
-    "operacao": "Adição",
-    "quantidade": 1,
-    "quantidadeAnterior": 0,
-    "quantidadeAtual": 1,
-    "responsavel": "sistema",
-    "observacao": "Atualização via sistema - +1",
-    "dataHora": "2025-09-20T18:30:39.692Z"
-  },
-  {
-    "equipamento": "EAM-3251",
-    "implemento": "Mangote 3",
-    "operacao": "Adição",
-    "quantidade": 1,
-    "quantidadeAnterior": 0,
-    "quantidadeAtual": 1,
-    "responsavel": "sistema",
-    "observacao": "Atualização via sistema - +1",
-    "dataHora": "2025-09-20T18:30:26.525Z"
-  },
-  {
-    "equipamento": "EAM-3251",
-    "implemento": "Lance de Mangueira",
-    "operacao": "Remoção",
-    "quantidade": 1,
-    "quantidadeAnterior": 1,
-    "quantidadeAtual": 0,
-    "responsavel": "sistema",
-    "observacao": "Atualização via sistema - -1",
-    "dataHora": "2025-09-20T18:29:58.920Z"
-  },
-  {
-    "equipamento": "EAM-3251",
-    "implemento": "Lance de Mangueira",
-    "operacao": "Remoção",
-    "quantidade": 1,
-    "quantidadeAnterior": 2,
-    "quantidadeAtual": 1,
-    "responsavel": "sistema",
-    "observacao": "Atualização via sistema - -1",
-    "dataHora": "2025-09-20T18:29:58.626Z"
-  },
-  {
-    "equipamento": "EAM-3251",
-    "implemento": "Lance de Mangueira",
-    "operacao": "Remoção",
-    "quantidade": 1,
-    "quantidadeAnterior": 3,
-    "quantidadeAtual": 2,
-    "responsavel": "sistema",
-    "observacao": "Atualização via sistema - -1",
-    "dataHora": "2025-09-20T18:29:57.999Z"
-  },
-  {
-    "equipamento": "EAM-3251",
-    "implemento": "Lance de Mangueira",
-    "operacao": "Remoção",
-    "quantidade": 1,
-    "quantidadeAnterior": 4,
-    "quantidadeAtual": 3,
-    "responsavel": "sistema",
-    "observacao": "Atualização via sistema - -1",
-    "dataHora": "2025-09-20T18:29:57.826Z"
-  },
-  {
-    "equipamento": "EAM-3251",
-    "implemento": "Lance de Mangueira",
-    "operacao": "Remoção",
     "quantidade": 1,
     "quantidadeAnterior": 5,
-    "quantidadeAtual": 4,
+    "quantidadeAtual": 6,
     "responsavel": "sistema",
-    "observacao": "Atualização via sistema - -1",
-    "dataHora": "2025-09-20T18:29:57.651Z"
+    "observacao": "Atualização via sistema - +1",
+    "dataHora": "2025-08-10T20:18:24.908Z"
   },
   {
-    "equipamento": "EAM-3251",
+    "equipamento": "ABC-1234",
+    "implemento": "Lance de Mangueira",
+    "operacao": "Remoção",
+    "quantidade": 1,
+    "quantidadeAnterior": 6,
+    "quantidadeAtual": 5,
+    "responsavel": "sistema",
+    "observacao": "Atualização via sistema - -1",
+    "dataHora": "2025-08-10T20:18:23.942Z"
+  },
+  {
+    "equipamento": "ABC-1234",
+    "implemento": "Lance de Mangueira",
+    "operacao": "Adição",
+    "quantidade": 1,
+    "quantidadeAnterior": 5,
+    "quantidadeAtual": 6,
+    "responsavel": "sistema",
+    "observacao": "Atualização via sistema - +1",
+    "dataHora": "2025-08-10T20:18:22.787Z"
+  },
+  {
+    "equipamento": "ABC-1234",
     "implemento": "Lance de Mangueira",
     "operacao": "Adição",
     "quantidade": 1,
@@ -140,10 +41,10 @@
     "quantidadeAtual": 5,
     "responsavel": "sistema",
     "observacao": "Atualização via sistema - +1",
-    "dataHora": "2025-09-20T18:27:49.485Z"
+    "dataHora": "2025-08-10T20:18:22.583Z"
   },
   {
-    "equipamento": "EAM-3251",
+    "equipamento": "ABC-1234",
     "implemento": "Lance de Mangueira",
     "operacao": "Adição",
     "quantidade": 1,
@@ -151,10 +52,10 @@
     "quantidadeAtual": 4,
     "responsavel": "sistema",
     "observacao": "Atualização via sistema - +1",
-    "dataHora": "2025-09-20T18:27:48.884Z"
+    "dataHora": "2025-08-10T20:18:22.405Z"
   },
   {
-    "equipamento": "EAM-3251",
+    "equipamento": "ABC-1234",
     "implemento": "Lance de Mangueira",
     "operacao": "Adição",
     "quantidade": 1,
@@ -162,10 +63,10 @@
     "quantidadeAtual": 3,
     "responsavel": "sistema",
     "observacao": "Atualização via sistema - +1",
-    "dataHora": "2025-09-20T18:27:47.621Z"
+    "dataHora": "2025-08-10T20:18:22.219Z"
   },
   {
-    "equipamento": "EAM-3251",
+    "equipamento": "ABC-1234",
     "implemento": "Lance de Mangueira",
     "operacao": "Adição",
     "quantidade": 1,
@@ -173,10 +74,10 @@
     "quantidadeAtual": 2,
     "responsavel": "sistema",
     "observacao": "Atualização via sistema - +1",
-    "dataHora": "2025-09-20T18:26:57.195Z"
+    "dataHora": "2025-08-10T20:18:22.035Z"
   },
   {
-    "equipamento": "EAM-3251",
+    "equipamento": "ABC-1234",
     "implemento": "Lance de Mangueira",
     "operacao": "Adição",
     "quantidade": 1,
@@ -184,6 +85,171 @@
     "quantidadeAtual": 1,
     "responsavel": "sistema",
     "observacao": "Atualização via sistema - +1",
-    "dataHora": "2025-09-20T18:26:57.034Z"
+    "dataHora": "2025-08-10T20:18:21.878Z"
+  },
+  {
+    "equipamento": "ABC-1234",
+    "implemento": "Lance de Mangueira",
+    "operacao": "Remoção",
+    "quantidade": 1,
+    "quantidadeAnterior": 1,
+    "quantidadeAtual": 0,
+    "responsavel": "sistema",
+    "observacao": "Atualização via sistema - -1",
+    "dataHora": "2025-08-10T20:18:20.731Z"
+  },
+  {
+    "equipamento": "ABC-1234",
+    "implemento": "Lance de Mangueira",
+    "operacao": "Remoção",
+    "quantidade": 1,
+    "quantidadeAnterior": 2,
+    "quantidadeAtual": 1,
+    "responsavel": "sistema",
+    "observacao": "Atualização via sistema - -1",
+    "dataHora": "2025-08-10T20:18:20.533Z"
+  },
+  {
+    "equipamento": "ABC-1234",
+    "implemento": "Lance de Mangueira",
+    "operacao": "Remoção",
+    "quantidade": 1,
+    "quantidadeAnterior": 3,
+    "quantidadeAtual": 2,
+    "responsavel": "sistema",
+    "observacao": "Atualização via sistema - -1",
+    "dataHora": "2025-08-10T20:18:20.302Z"
+  },
+  {
+    "equipamento": "ABC-1234",
+    "implemento": "Lance de Mangueira",
+    "operacao": "Remoção",
+    "quantidade": 1,
+    "quantidadeAnterior": 4,
+    "quantidadeAtual": 3,
+    "responsavel": "sistema",
+    "observacao": "Atualização via sistema - -1",
+    "dataHora": "2025-08-10T20:18:19.875Z"
+  },
+  {
+    "equipamento": "ABC-1234",
+    "implemento": "Lance de Mangueira",
+    "operacao": "Remoção",
+    "quantidade": 1,
+    "quantidadeAnterior": 5,
+    "quantidadeAtual": 4,
+    "responsavel": "sistema",
+    "observacao": "Atualização via sistema - -1",
+    "dataHora": "2025-08-10T20:18:19.691Z"
+  },
+  {
+    "equipamento": "ABC-1234",
+    "implemento": "Lance de Mangueira",
+    "operacao": "Remoção",
+    "quantidade": 1,
+    "quantidadeAnterior": 6,
+    "quantidadeAtual": 5,
+    "responsavel": "sistema",
+    "observacao": "Atualização via sistema - -1",
+    "dataHora": "2025-08-10T20:18:17.670Z"
+  },
+  {
+    "equipamento": "ABC-1234",
+    "implemento": "Bomba Centrífuga 3\"",
+    "operacao": "Adição",
+    "quantidade": 1,
+    "quantidadeAnterior": 0,
+    "quantidadeAtual": 1,
+    "responsavel": "sistema",
+    "observacao": "Atualização via sistema - +1",
+    "dataHora": "2025-08-10T20:18:16.625Z"
+  },
+  {
+    "equipamento": "ABC-1234",
+    "implemento": "Lance de Mangueira",
+    "operacao": "Adição",
+    "quantidade": 1,
+    "quantidadeAnterior": 5,
+    "quantidadeAtual": 6,
+    "responsavel": "sistema",
+    "observacao": "Atualização via sistema - +1",
+    "dataHora": "2025-08-10T20:18:15.583Z"
+  },
+  {
+    "equipamento": "ABC-1234",
+    "implemento": "Lance de Mangueira",
+    "operacao": "Adição",
+    "quantidade": 1,
+    "quantidadeAnterior": 4,
+    "quantidadeAtual": 5,
+    "responsavel": "sistema",
+    "observacao": "Atualização via sistema - +1",
+    "dataHora": "2025-08-10T20:18:15.376Z"
+  },
+  {
+    "equipamento": "ABC-1234",
+    "implemento": "Lance de Mangueira",
+    "operacao": "Adição",
+    "quantidade": 1,
+    "quantidadeAnterior": 3,
+    "quantidadeAtual": 4,
+    "responsavel": "sistema",
+    "observacao": "Atualização via sistema - +1",
+    "dataHora": "2025-08-10T20:18:15.180Z"
+  },
+  {
+    "equipamento": "ABC-1234",
+    "implemento": "Lance de Mangueira",
+    "operacao": "Remoção",
+    "quantidade": 1,
+    "quantidadeAnterior": 4,
+    "quantidadeAtual": 3,
+    "responsavel": "sistema",
+    "observacao": "Atualização via sistema - -1",
+    "dataHora": "2025-08-10T20:18:14.295Z"
+  },
+  {
+    "equipamento": "ABC-1234",
+    "implemento": "Lance de Mangueira",
+    "operacao": "Remoção",
+    "quantidade": 1,
+    "quantidadeAnterior": 5,
+    "quantidadeAtual": 4,
+    "responsavel": "sistema",
+    "observacao": "Atualização via sistema - -1",
+    "dataHora": "2025-08-10T20:18:14.104Z"
+  },
+  {
+    "equipamento": "ABC-1234",
+    "implemento": "Lance de Mangueira",
+    "operacao": "Remoção",
+    "quantidade": 1,
+    "quantidadeAnterior": 6,
+    "quantidadeAtual": 5,
+    "responsavel": "sistema",
+    "observacao": "Atualização via sistema - -1",
+    "dataHora": "2025-08-10T20:18:13.925Z"
+  },
+  {
+    "equipamento": "ABC-1234",
+    "implemento": "Bomba Centrífuga 3\"",
+    "operacao": "Remoção",
+    "quantidade": 1,
+    "quantidadeAnterior": 1,
+    "quantidadeAtual": 0,
+    "responsavel": "sistema",
+    "observacao": "Atualização via sistema - -1",
+    "dataHora": "2025-08-10T20:18:13.016Z"
+  },
+  {
+    "equipamento": "ABC-1234",
+    "implemento": "Lance de Mangueira",
+    "operacao": "Adição",
+    "quantidade": 1,
+    "quantidadeAnterior": 5,
+    "quantidadeAtual": 6,
+    "responsavel": "sistema",
+    "observacao": "Atualização via sistema - +1",
+    "dataHora": "2025-08-10T20:18:03.324Z"
   }
 ]
